@@ -1,0 +1,727 @@
+:root {
+  --page-bg: #f1f1f5;
+  --phone-bg: #f3f2f7;
+  --text-main: #202020;
+  --text-subtle: #9b9ba1;
+  --menu-pink: #fc4589;
+  --menu-item-shadow: rgba(0, 0, 0, 0.06);
+  --menu-item-border: rgba(0, 0, 0, 0.06);
+  --white: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: Helvetica, "PingFang SC", "Hiragino Sans GB", Arial, sans-serif;
+  background: var(--page-bg);
+  color: var(--text-main);
+}
+
+button {
+  font: inherit;
+}
+
+.page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.phone-shell {
+  position: relative;
+  width: 375px;
+  height: 812px;
+  overflow: hidden;
+  border-radius: 0;
+  background: var(--phone-bg);
+}
+
+.status-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 34px 24px 12px;
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+}
+
+.status-icons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.signal {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 14px;
+}
+
+.signal i {
+  display: block;
+  width: 4px;
+  background: #111;
+  border-radius: 999px;
+}
+
+.signal i:nth-child(1) {
+  height: 5px;
+}
+
+.signal i:nth-child(2) {
+  height: 8px;
+}
+
+.signal i:nth-child(3) {
+  height: 11px;
+}
+
+.signal i:nth-child(4) {
+  height: 14px;
+}
+
+.wifi {
+  position: relative;
+  width: 18px;
+  height: 12px;
+  border-top: 3px solid #111;
+  border-radius: 50% 50% 0 0;
+}
+
+.wifi::before,
+.wifi::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border-top: 3px solid #111;
+  border-radius: 50% 50% 0 0;
+}
+
+.wifi::before {
+  top: 3px;
+  width: 12px;
+  height: 7px;
+}
+
+.wifi::after {
+  top: 7px;
+  width: 6px;
+  height: 3px;
+}
+
+.battery {
+  position: relative;
+  width: 28px;
+  height: 14px;
+  border: 2px solid #111;
+  border-radius: 4px;
+}
+
+.battery::after {
+  content: "";
+  position: absolute;
+  right: -4px;
+  top: 3px;
+  width: 2px;
+  height: 6px;
+  border-radius: 0 2px 2px 0;
+  background: #111;
+}
+
+.battery-level {
+  display: block;
+  width: 18px;
+  height: 8px;
+  margin: 1px;
+  border-radius: 2px;
+  background: #111;
+}
+
+.content-area {
+  position: absolute;
+  inset: 0;
+  background: #f5f4f8;
+}
+
+.flyout-wrap {
+  position: absolute;
+  right: 11px;
+  bottom: 170px;
+  width: 220px;
+  height: 220px;
+  z-index: 5;
+}
+
+.scheme-3 .flyout-wrap {
+  right: 11px;
+  bottom: 170px;
+}
+
+.flyout {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  line-height: 0;
+  list-style: none;
+}
+
+.flyout > li {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.flyout > li button {
+  --shift-x: 0px;
+  --shift-y: 0px;
+  --overshoot-x: 0px;
+  --overshoot-y: 0px;
+  --settle-x: 0px;
+  --settle-y: 0px;
+  position: absolute;
+  left: 160px;
+  top: 160px;
+  display: block;
+  width: 64px;
+  height: 64px;
+  padding: 0;
+  border: 0.5px solid #e8e8e8;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transform: translate(0, 0);
+}
+
+.flyout > li button:active {
+  opacity: 0.92;
+}
+
+.flyout > li button:active .option-bg,
+.flyout > li button:active .icon,
+.flyout > li button:active .option-label {
+  opacity: 0.72;
+}
+
+.flyout-init li {
+  display: none;
+}
+
+.flyout.expand li button {
+  transform: translate(var(--shift-x), var(--shift-y));
+  animation: expand 0.5s ease 1 backwards;
+}
+
+.flyout.contract li button {
+  transform: translate(0, 0);
+  animation: contract 0.5s ease 1 both;
+}
+
+.flyout.fade li button.clicked {
+  transform: translate(var(--shift-x), var(--shift-y));
+  animation: clicked 0.5s ease-out 1 forwards;
+}
+
+.flyout.fade li button:not(.clicked) {
+  transform: translate(var(--shift-x), var(--shift-y));
+  animation: fade 0.5s ease-out 1 forwards;
+}
+
+.flyout.fade li button:not(.clicked) .icon {
+  opacity: 0.1;
+  transition: opacity 0.5s ease;
+}
+
+.flyout li:nth-of-type(1) button {
+  --shift-x: -18px;
+  --shift-y: -93px;
+  --overshoot-x: -21.4px;
+  --overshoot-y: -110.7px;
+  --settle-x: -17.2px;
+  --settle-y: -89.1px;
+  animation-delay: 0.12s;
+}
+
+.flyout.expand li:nth-of-type(1) button {
+  animation-delay: 0s;
+}
+
+.flyout.expand li:nth-of-type(1) .icon {
+  transform: rotate(0deg);
+}
+
+.scheme-3 .flyout.expand li:nth-of-type(1) .icon {
+  animation: scheme1-icon-expand 0.6s ease-out 0s 1 both;
+}
+
+.scheme-3 .flyout.contract li:nth-of-type(1) .icon {
+  animation: scheme1-icon-contract 0.6s ease 0.27s 1 both;
+}
+
+.flyout li:nth-of-type(2) button {
+  --shift-x: -91.5px;
+  --shift-y: -43px;
+  --overshoot-x: -107.8px;
+  --overshoot-y: -50.7px;
+  --settle-x: -87.9px;
+  --settle-y: -41.3px;
+  animation-delay: 0.08s;
+}
+
+.flyout.expand li:nth-of-type(2) button {
+  animation-delay: 0.04s;
+}
+
+.flyout.expand li:nth-of-type(2) .icon,
+.flyout.fade li:nth-of-type(2) button.clicked .icon {
+  transform: rotate(0deg);
+}
+
+.scheme-3 .flyout.expand li:nth-of-type(2) .icon {
+  animation: scheme1-icon-expand 0.6s ease-out 0.04s 1 both;
+}
+
+.scheme-3 .flyout.contract li:nth-of-type(2) .icon {
+  animation: scheme1-icon-contract 0.6s ease 0.23s 1 both;
+}
+
+.flyout li:nth-of-type(3) button {
+  --shift-x: -91px;
+  --shift-y: 43px;
+  --overshoot-x: -107.3px;
+  --overshoot-y: 50.7px;
+  --settle-x: -87.4px;
+  --settle-y: 41.3px;
+  animation-delay: 0.04s;
+}
+
+.flyout.expand li:nth-of-type(3) button {
+  animation-delay: 0.08s;
+}
+
+.flyout.expand li:nth-of-type(3) .icon,
+.flyout.fade li:nth-of-type(3) button.clicked .icon {
+  transform: rotate(0deg);
+}
+
+.scheme-3 .flyout.expand li:nth-of-type(3) .icon {
+  animation: scheme1-icon-expand 0.6s ease-out 0.08s 1 both;
+}
+
+.scheme-3 .flyout.contract li:nth-of-type(3) .icon {
+  animation: scheme1-icon-contract 0.6s ease 0.19s 1 both;
+}
+
+.flyout li:nth-of-type(4) button {
+  --shift-x: -18px;
+  --shift-y: 93px;
+  --overshoot-x: -21.4px;
+  --overshoot-y: 110.7px;
+  --settle-x: -17.2px;
+  --settle-y: 89.1px;
+  animation-delay: 0s;
+}
+
+.flyout.expand li:nth-of-type(4) button {
+  animation-delay: 0.12s;
+}
+
+.flyout.expand li:nth-of-type(4) .icon,
+.flyout.fade li:nth-of-type(4) button.clicked .icon {
+  transform: rotate(0deg);
+}
+
+.scheme-3 .flyout.expand li:nth-of-type(4) .icon {
+  animation: scheme1-icon-expand 0.6s ease-out 0.12s 1 both;
+}
+
+.scheme-3 .flyout.contract li:nth-of-type(4) .icon {
+  animation: scheme1-icon-contract 0.6s ease 0.15s 1 both;
+}
+
+.flyout-btn {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 50%;
+  outline: 0;
+  background: url("./assets/按钮-普通.png") no-repeat center / 100% 100%;
+  box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.flyout-gray-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  border-radius: 50%;
+  background: #cccccc;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.flyout-plus-icon {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 56px;
+  height: 56px;
+  transition: transform 0.4s ease;
+}
+
+.flyout-plus-icon::before,
+.flyout-plus-icon::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 16px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--white);
+  transform: translate(-50%, -50%);
+}
+
+.flyout-plus-icon::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.flyout-btn.btn-rotate .flyout-plus-icon {
+  transform: rotate(-135deg);
+}
+
+.scheme-3 .flyout-btn.btn-rotate .flyout-gray-layer {
+  opacity: 1;
+}
+
+.icon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: block;
+  width: 28px;
+  height: 28px;
+  margin-left: -14px;
+  margin-top: -14px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.option-bg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.option-label {
+  position: absolute;
+  left: 50%;
+  bottom: 7px;
+  display: none;
+  color: #333333;
+  font-size: 11px;
+  line-height: 1;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+.scheme-3 .option-label {
+  top: 41px;
+  bottom: auto;
+  display: block;
+  line-height: 11px;
+}
+
+.scheme-3 .flyout.expand li:nth-of-type(1) .option-label {
+  animation: scheme3-label-show 0.5s ease 0s 1 both;
+}
+
+.scheme-3 .flyout.contract li:nth-of-type(1) .option-label {
+  animation: scheme3-label-hide 0.5s ease 0.12s 1 both;
+}
+
+.scheme-3 .flyout.expand li:nth-of-type(2) .option-label {
+  animation: scheme3-label-show 0.5s ease 0.04s 1 both;
+}
+
+.scheme-3 .flyout.contract li:nth-of-type(2) .option-label {
+  animation: scheme3-label-hide 0.5s ease 0.08s 1 both;
+}
+
+.scheme-3 .flyout.expand li:nth-of-type(3) .option-label {
+  animation: scheme3-label-show 0.5s ease 0.08s 1 both;
+}
+
+.scheme-3 .flyout.contract li:nth-of-type(3) .option-label {
+  animation: scheme3-label-hide 0.5s ease 0.04s 1 both;
+}
+
+.scheme-3 .flyout.expand li:nth-of-type(4) .option-label {
+  animation: scheme3-label-show 0.5s ease 0.12s 1 both;
+}
+
+.scheme-3 .flyout.contract li:nth-of-type(4) .option-label {
+  animation: scheme3-label-hide 0.5s ease 0s 1 both;
+}
+
+.scheme-3 .icon {
+  top: 8px;
+  margin-top: 0;
+}
+
+.scheme-3 .flyout > li button {
+  left: 160px;
+  top: 160px;
+  width: 64px;
+  height: 64px;
+}
+
+.scheme-3 .flyout li:nth-of-type(1) button {
+  --shift-x: -5px;
+  --shift-y: -158px;
+  --overshoot-x: -5.9px;
+  --overshoot-y: -187px;
+  --settle-x: -4.8px;
+  --settle-y: -151.5px;
+}
+
+.scheme-3 .flyout li:nth-of-type(2) button {
+  --shift-x: -79.5px;
+  --shift-y: -136px;
+  --overshoot-x: -94px;
+  --overshoot-y: -160.8px;
+  --settle-x: -76.2px;
+  --settle-y: -130.4px;
+}
+
+.scheme-3 .flyout li:nth-of-type(3) button {
+  --shift-x: -137px;
+  --shift-y: -79px;
+  --overshoot-x: -161.9px;
+  --overshoot-y: -93.4px;
+  --settle-x: -131.4px;
+  --settle-y: -75.8px;
+}
+
+.scheme-3 .flyout li:nth-of-type(4) button {
+  --shift-x: -159px;
+  --shift-y: -4px;
+  --overshoot-x: -187.9px;
+  --overshoot-y: -4.7px;
+  --settle-x: -152.5px;
+  --settle-y: -3.8px;
+}
+
+.icon-camera {
+  background-image: url("./assets/饮食.png");
+}
+
+.icon-photo {
+  background-image: url("./assets/心情.png");
+}
+
+.icon-music {
+  background-image: url("./assets/体重.png");
+}
+
+.icon-pin {
+  background-image: url("./assets/症状.png");
+}
+
+.input-dock {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 83px;
+  padding: 0;
+  z-index: 4;
+}
+
+.input-image {
+  display: block;
+  width: 375px;
+  height: auto;
+}
+
+.tabbar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 83px;
+  z-index: 3;
+}
+
+.tabbar-image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.home-indicator {
+  display: none;
+}
+
+@keyframes expand {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+
+  50% {
+    transform: translate(var(--overshoot-x), var(--overshoot-y));
+    opacity: 1;
+  }
+
+  70% {
+    transform: translate(var(--settle-x), var(--settle-y));
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(var(--shift-x), var(--shift-y));
+    opacity: 1;
+  }
+}
+
+@keyframes scheme1-icon-expand {
+  0% {
+    transform: rotate(-90deg);
+  }
+
+  70%,
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes scheme1-icon-contract {
+  0% {
+    transform: rotate(0deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: rotate(-180deg);
+    opacity: 1;
+  }
+}
+
+@keyframes scheme3-label-show {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes scheme3-label-hide {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes contract {
+  0% {
+    transform: translate(var(--shift-x), var(--shift-y));
+    opacity: 1;
+  }
+
+  30% {
+    transform: translate(var(--settle-x), var(--settle-y));
+    opacity: 1;
+  }
+
+  50% {
+    transform: translate(var(--overshoot-x), var(--overshoot-y));
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+}
+
+@keyframes clicked {
+  0% {
+    transform: translate(var(--shift-x), var(--shift-y)) scale(1);
+    opacity: 1;
+  }
+
+  90% {
+    transform: translate(var(--shift-x), var(--shift-y)) scale(1);
+  }
+
+  99% {
+    transform: translate(0, 0) scale(6);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translate(0, 0) scale(0);
+  }
+}
+
+@keyframes fade {
+  0% {
+    transform: translate(var(--shift-x), var(--shift-y)) scale(1);
+    opacity: 1;
+  }
+
+  90% {
+    transform: translate(var(--shift-x), var(--shift-y)) scale(1);
+    opacity: 0;
+  }
+
+  99% {
+    transform: translate(0, 0) scale(0);
+  }
+
+  100% {
+    transform: translate(0, 0) scale(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .page {
+    padding: 0;
+    overflow: auto;
+  }
+
+  .phone-shell {
+    flex: 0 0 375px;
+  }
+}
