@@ -32,3 +32,17 @@ itemButtons.forEach((button) => {
     closeMenu("fade");
   });
 });
+
+document.addEventListener("click", (event) => {
+  const isOpen = flyout.classList.contains("expand");
+
+  if (!isOpen) {
+    return;
+  }
+
+  if (event.target.closest(".flyout-wrap")) {
+    return;
+  }
+
+  closeMenu();
+});
