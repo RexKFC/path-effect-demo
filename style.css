@@ -42,7 +42,36 @@ button {
   height: 812px;
   overflow: hidden;
   border-radius: 0;
-  background: var(--phone-bg);
+  background: #f2f2f5;
+}
+
+.view-switcher {
+  position: absolute;
+  top: 70px;
+  left: 16px;
+  z-index: 20;
+  display: flex;
+  gap: 8px;
+}
+
+.view-switch-btn {
+  height: 32px;
+  padding: 0 12px;
+  border: 0.5px solid #e8e8e8;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  color: #666666;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.view-switch-btn.active {
+  border-color: transparent;
+  background: var(--menu-pink);
+  color: #ffffff;
 }
 
 .status-bar {
@@ -153,6 +182,954 @@ button {
   background: #111;
 }
 
+.view-panel {
+  position: absolute;
+  inset: 0;
+}
+
+.view-panel[hidden] {
+  display: none;
+}
+
+.view-panel-blank {
+  background: #f2f2f5;
+}
+
+.card-page-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+}
+
+.card-page-header-image {
+  display: block;
+  width: 375px;
+  height: auto;
+}
+
+.card-page-body {
+  position: absolute;
+  top: 88px;
+  left: 0;
+  right: 0;
+  bottom: 83px;
+  background: linear-gradient(to right, transparent 0 44px, #f2f2f5 44px 100%);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  z-index: 2;
+}
+
+.card-page-body::-webkit-scrollbar {
+  display: none;
+}
+
+.timeline-line {
+  position: absolute;
+  top: 88px;
+  bottom: 0;
+  left: 22px;
+  width: 1px;
+  background: #dfdfe1;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.timeline-date-header {
+  position: absolute;
+  top: 12px;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 36px;
+  z-index: 2;
+}
+
+.timeline-date-dot {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  z-index: 3;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ff99dd 0%, #ff5990 100%);
+  transform: translateY(-50%);
+}
+
+.timeline-date-text {
+  color: #323232;
+  font-size: 21px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.timeline-weekday-text {
+  color: #9b9ba1;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.card-feed {
+  position: relative;
+  padding: 49px 0 84px 0;
+  z-index: 1;
+}
+
+.feed-entry {
+  z-index: 2;
+}
+
+.feed-entry {
+  position: relative;
+  margin-top: 0;
+  padding-left: 0;
+}
+
+.feed-entry + .feed-entry {
+  margin-top: 16px;
+}
+
+.feed-entry-dot {
+  position: absolute;
+  left: 19px;
+  top: 19.5px;
+  width: 6px;
+  height: 6px;
+  z-index: 3;
+  border-radius: 50%;
+  background: #d4d4d8;
+  transform: translateY(-50%);
+}
+
+.feed-card {
+  margin-left: 36px;
+  width: calc(100% - 48px);
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 12px;
+  box-shadow: none;
+}
+
+.feed-card-time {
+  color: #9f9fa5;
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.feed-card-content {
+  margin: 13px 0 0;
+  color: #323232;
+  font-size: 17px;
+  line-height: 1.45;
+  letter-spacing: -0.04em;
+}
+
+.mood-timeline-feed {
+  padding-top: 49px;
+}
+
+.mood-feed-entry + .mood-feed-entry {
+  margin-top: 16px;
+}
+
+.mood-feed-card {
+  padding-bottom: 12px;
+}
+
+.mood-feed-entry.is-entering .feed-card-time,
+.mood-feed-entry.is-entering .mood-feed-primary {
+  opacity: 0;
+}
+
+.mood-feed-entry.is-entering.is-primary-visible .feed-card-time,
+.mood-feed-entry.is-entering.is-primary-visible .mood-feed-primary {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.mood-feed-primary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 22px;
+  padding-bottom: 7px;
+}
+
+.mood-feed-primary-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+.mood-feed-primary-text {
+  margin: 0;
+  color: #323232;
+  font-size: 17px;
+  line-height: 1.45;
+  letter-spacing: -0.04em;
+}
+
+.feed-card-food {
+  padding-bottom: 16px;
+}
+
+.food-card-photo {
+  display: block;
+  width: 230px;
+  height: 230px;
+  margin: 12px 0 0;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.feed-entry-food.is-entering .food-card-photo {
+  opacity: 0;
+}
+
+.food-card-content {
+  margin: 8px 0 0;
+  color: #323232;
+  font-size: 17px;
+  line-height: 1.45;
+  letter-spacing: -0.04em;
+}
+
+.food-card-total {
+  margin: 14px 0 0;
+  color: #323232;
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+.food-card-total-value {
+  margin-left: 0;
+  color: #ff5f93;
+}
+
+.feed-card-tags {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.feed-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 16px;
+  padding: 0;
+  border-radius: 4px;
+  border: 1.5px solid currentColor;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.feed-tag-mood {
+  color: #f2ae00;
+}
+
+.feed-tag-weight {
+  color: #c76dff;
+}
+
+.feed-card-divider {
+  height: 1px;
+  margin: 12px 0 10px;
+  background: #ececef;
+}
+
+.mood-feed-card .feed-card-divider {
+  margin: 19px 0 10px;
+}
+
+.feed-chart-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding-right: 24px;
+  padding-left: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.feed-entry:not(.feed-entry-food).is-entering .feed-chart-header,
+.feed-entry:not(.feed-entry-food).is-entering .feed-chart-panel,
+.feed-entry:not(.feed-entry-food).is-entering .feed-card-summary {
+  opacity: 0;
+  transform: none;
+}
+
+.feed-entry:not(.feed-entry-food).is-entering .feed-card-time,
+.feed-entry:not(.feed-entry-food).is-entering .feed-card-content {
+  opacity: 0;
+  transform: none;
+}
+
+.feed-entry:not(.feed-entry-food).is-entering .feed-card-tags {
+  margin-top: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.feed-entry:not(.feed-entry-food).is-entering .feed-card-divider {
+  opacity: 0;
+  margin: 0;
+}
+
+.feed-entry:not(.feed-entry-food).is-entering .feed-tag {
+  opacity: 0;
+  transform: none;
+}
+
+.feed-entry:not(.feed-entry-food).is-entering .feed-chart-content {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.feed-entry-food.is-entering .food-card-content,
+.feed-entry-food.is-entering .food-card-total,
+.feed-entry-food.is-entering .food-card-summary {
+  opacity: 0;
+  transform: none;
+  height: 0;
+  margin-top: 0;
+  overflow: hidden;
+}
+
+.feed-entry-food.is-entering .feed-card-divider {
+  opacity: 0;
+  margin: 0;
+}
+
+.feed-entry-food.is-entering .feed-chart-header,
+.feed-entry-food.is-entering .food-chart-content {
+  opacity: 0;
+  transform: none;
+  max-height: 0;
+  margin-top: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  overflow: hidden;
+}
+
+.feed-entry-food.is-entering .food-chart-panel,
+.feed-entry-food.is-entering .food-chart-axis,
+.feed-entry-food.is-entering .food-chart-grid,
+.feed-entry-food.is-entering .food-chart-days {
+  opacity: 0;
+}
+
+.feed-entry-food.is-entering .food-chart-bar,
+.feed-entry-food.is-entering .food-chart-bar-today em {
+  opacity: 0;
+  transform: scaleY(0);
+  transform-origin: center bottom;
+}
+
+.feed-chart-content {
+  max-height: none;
+  overflow: hidden;
+  transition:
+    opacity 0.24s ease,
+    transform 0.24s ease,
+    max-height 0.24s ease,
+    margin-top 0.24s ease;
+}
+
+.feed-entry:not(.feed-entry-food).is-entering .feed-chart-header {
+  max-height: 0;
+  overflow: hidden;
+}
+
+.feed-entry:not(.feed-entry-food).is-entering .feed-chart-panel {
+  max-height: 0;
+  margin-top: 0;
+  overflow: hidden;
+}
+
+.feed-entry:not(.feed-entry-food).is-entering .feed-card-summary {
+  height: 0;
+  margin-top: 0;
+  overflow: hidden;
+}
+
+.feed-entry:not(.feed-entry-food).is-entering.is-green-visible .feed-chart-header,
+.feed-entry:not(.feed-entry-food).is-entering.is-green-visible .feed-chart-panel {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.36s ease,
+    max-height 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+    margin-top 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.feed-entry:not(.feed-entry-food).is-entering.is-green-visible .feed-chart-header {
+  max-height: 32px;
+  transition:
+    opacity 0.4s ease,
+    max-height 0s linear;
+}
+
+.feed-entry:not(.feed-entry-food).is-entering.is-primary-visible .feed-card-time,
+.feed-entry:not(.feed-entry-food).is-entering.is-primary-visible .feed-card-content {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.3s ease;
+}
+
+.feed-entry:not(.feed-entry-food).is-entering.is-tags-visible .feed-tag {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.36s ease;
+}
+
+.feed-entry:not(.feed-entry-food).is-entering.is-tags-visible .feed-card-tags {
+  margin-top: 8px;
+  height: 16px;
+  transition:
+    margin-top 0.24s ease,
+    height 0.24s ease;
+}
+
+.feed-entry:not(.feed-entry-food).is-entering.is-tags-visible .feed-tag:nth-child(1) {
+  transition-delay: 0s;
+}
+
+.feed-entry:not(.feed-entry-food).is-entering.is-tags-visible .feed-tag:nth-child(2) {
+  transition-delay: 0.16s;
+}
+
+.feed-entry:not(.feed-entry-food).is-entering.is-divider-visible .feed-card-divider {
+  opacity: 1;
+  margin: 12px 0 10px;
+  transition:
+    opacity 0.24s ease,
+    margin 0.24s ease;
+}
+
+.feed-entry:not(.feed-entry-food).is-entering.is-green-visible .feed-chart-panel {
+  max-height: 118px;
+  margin-top: 10px;
+}
+
+.feed-entry:not(.feed-entry-food).is-entering.is-green-visible .feed-chart-content {
+  max-height: 400px;
+  opacity: 1;
+}
+
+.feed-entry:not(.feed-entry-food).is-entering.is-summary-visible .feed-card-summary {
+  opacity: 1;
+  transform: none;
+  height: var(--summary-target-height, 0px);
+  margin-top: 8px;
+  transition:
+    opacity 0.24s ease,
+    height 0.14s ease,
+    margin-top 0.24s ease;
+}
+
+.feed-entry-food.is-entering.is-food-content-visible .food-card-content,
+.feed-entry-food.is-entering.is-food-total-visible .food-card-total,
+.feed-entry-food.is-entering.is-food-summary-text-visible .food-card-summary {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.24s ease,
+    height 0.14s ease,
+    margin-top 0.24s ease;
+}
+
+.feed-entry-food.is-entering.is-food-photo-visible .food-card-photo {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.feed-entry-food.is-entering.is-food-summary-visible .feed-chart-header,
+.feed-entry-food.is-entering.is-food-summary-visible .food-chart-content {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.36s ease,
+    max-height 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+    margin-top 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.feed-entry-food.is-entering.is-food-summary-visible .feed-chart-header {
+  max-height: 32px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.feed-entry-food.is-entering.is-food-summary-visible .food-chart-content {
+  max-height: 400px;
+  margin-top: 10px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.feed-entry-food.is-entering.is-food-chart-visible .food-chart-panel,
+.feed-entry-food.is-entering.is-food-chart-visible .food-chart-axis,
+.feed-entry-food.is-entering.is-food-chart-visible .food-chart-grid,
+.feed-entry-food.is-entering.is-food-chart-visible .food-chart-days {
+  opacity: 1;
+  transition: opacity 0.6s ease;
+}
+
+.feed-entry-food.is-entering.is-food-bars-visible .food-chart-bar,
+.feed-entry-food.is-entering.is-food-bars-visible .food-chart-bar-today em {
+  opacity: 1;
+  transform: scaleY(1);
+  transition:
+    opacity 0.18s ease,
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.feed-entry-food.is-entering.is-food-bars-visible .food-chart-bar:nth-child(1) {
+  transition-delay: 0s;
+}
+
+.feed-entry-food.is-entering.is-food-bars-visible .food-chart-bar:nth-child(2) {
+  transition-delay: 0.08s;
+}
+
+.feed-entry-food.is-entering.is-food-bars-visible .food-chart-bar:nth-child(3) {
+  transition-delay: 0.16s;
+}
+
+.feed-entry-food.is-entering.is-food-bars-visible .food-chart-bar:nth-child(4) {
+  transition-delay: 0.24s;
+}
+
+.feed-entry-food.is-entering.is-food-bars-visible .food-chart-bar:nth-child(5) {
+  transition-delay: 0.32s;
+}
+
+.feed-entry-food.is-entering.is-food-bars-visible .food-chart-bar:nth-child(6) {
+  transition-delay: 0.4s;
+}
+
+.feed-entry-food.is-entering.is-food-bars-visible .food-chart-bar:nth-child(7) {
+  transition-delay: 0.48s;
+}
+
+.feed-entry-food.is-entering.is-food-bars-visible .food-chart-bar-today em {
+  transition-delay: 0.56s;
+}
+
+.feed-entry-food.is-entering.is-food-divider-visible .feed-card-divider {
+  opacity: 1;
+  margin: 12px 0;
+  transition:
+    opacity 0.24s ease,
+    margin 0.24s ease;
+}
+
+.feed-entry-food.is-entering.is-food-content-visible .food-card-content {
+  margin-top: 8px;
+}
+
+.feed-entry-food.is-entering.is-food-total-visible .food-card-total {
+  margin-top: 14px;
+}
+
+.feed-entry-food.is-entering.is-food-summary-text-visible .food-card-summary {
+  margin-top: 8px;
+}
+
+.feed-chart-sparkles {
+  display: block;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+}
+
+.feed-chart-title {
+  flex: 1;
+  color: #323232;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.feed-chart-chevron {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  transform: translateY(calc(-50% - 2px));
+  transition: transform 0.24s ease;
+  overflow: visible;
+}
+
+.feed-chart-chevron-image {
+  display: block;
+  width: 14px;
+  height: auto;
+}
+
+.feed-chart-panel {
+  display: flex;
+  gap: 14px;
+  margin-top: 10px;
+  height: 118px;
+  padding: 8px;
+  border-radius: 8px;
+  background: #fafafa;
+  overflow: hidden;
+  transition:
+    opacity 0.24s ease,
+    transform 0.24s ease,
+    max-height 0.24s ease,
+    margin-top 0.24s ease,
+    padding 0.24s ease;
+}
+
+.feed-chart-levels {
+  display: grid;
+  grid-template-rows: repeat(3, 26px);
+  height: 78px;
+  margin-top: 0;
+  color: #a4a4aa;
+  font-size: 11px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.feed-chart-levels span {
+  display: flex;
+  align-items: center;
+  transform: translateY(-1px);
+}
+
+.feed-chart-plot {
+  flex: 0 0 257px;
+  width: 257px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  position: relative;
+}
+
+.feed-chart-bands {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: grid;
+  grid-template-rows: repeat(3, 26px);
+  z-index: 0;
+}
+
+.feed-chart-band {
+  display: block;
+}
+
+.feed-chart-levels,
+.feed-chart-bands,
+.feed-chart-grid,
+.feed-chart-days {
+  transition: opacity 0.6s ease;
+}
+
+.feed-chart-band-positive {
+  background: rgba(255, 195, 1, 0.06);
+}
+
+.feed-chart-band-neutral {
+  background: rgba(77, 166, 255, 0.06);
+}
+
+.feed-chart-band-negative {
+  background: rgba(255, 88, 102, 0.06);
+}
+
+.feed-chart-svg {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  flex: 0 0 78px;
+  height: 78px;
+  border-radius: 0;
+  position: relative;
+  z-index: 1;
+  background: transparent;
+  overflow: visible;
+}
+
+.feed-chart-line {
+  stroke-dasharray: var(--chart-line-length, 0);
+  stroke-dashoffset: 0;
+}
+
+.feed-chart-dots circle {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.feed-entry.is-entering .feed-chart-line {
+  stroke-dashoffset: var(--chart-line-length, 0);
+}
+
+.feed-entry.is-entering .feed-chart-levels,
+.feed-entry.is-entering .feed-chart-bands,
+.feed-entry.is-entering .feed-chart-grid,
+.feed-entry.is-entering .feed-chart-days {
+  opacity: 0;
+}
+
+.feed-entry.is-entering.is-green-visible .feed-chart-levels,
+.feed-entry.is-entering.is-green-visible .feed-chart-bands,
+.feed-entry.is-entering.is-green-visible .feed-chart-grid,
+.feed-entry.is-entering.is-green-visible .feed-chart-days {
+  opacity: 1;
+}
+
+.feed-entry.is-entering.is-green-visible .feed-chart-line {
+  transition: stroke-dashoffset 0.72s cubic-bezier(0.22, 1, 0.36, 1) 0.6s;
+  stroke-dashoffset: 0;
+}
+
+.feed-entry.is-entering .feed-chart-dots circle {
+  opacity: 0;
+  transform: scale(0.7);
+}
+
+.feed-entry.is-entering.is-green-visible .feed-chart-dots circle {
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity 0.18s ease,
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.feed-entry.is-entering.is-green-visible .feed-chart-dots circle:nth-child(1) {
+  transition-delay: 0.6s;
+}
+
+.feed-entry.is-entering.is-green-visible .feed-chart-dots circle:nth-child(2) {
+  transition-delay: 0.72s;
+}
+
+.feed-entry.is-entering.is-green-visible .feed-chart-dots circle:nth-child(3) {
+  transition-delay: 0.84s;
+}
+
+.feed-entry.is-entering.is-green-visible .feed-chart-dots circle:nth-child(4) {
+  transition-delay: 0.96s;
+}
+
+.feed-entry.is-entering.is-green-visible .feed-chart-dots circle:nth-child(5) {
+  transition-delay: 1.08s;
+}
+
+.feed-entry.is-entering.is-green-visible .feed-chart-dots circle:nth-child(6) {
+  transition-delay: 1.2s;
+}
+
+.feed-entry.is-entering.is-green-visible .feed-chart-dots circle:nth-child(7) {
+  transition-delay: 1.32s;
+}
+
+.feed-chart-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  width: 100%;
+  margin-top: 8px;
+  color: #a4a4aa;
+  font-size: 11px;
+  line-height: 1;
+  text-align: center;
+}
+
+.feed-card-summary {
+  margin: 8px 0 0;
+  color: #323232;
+  font-size: 17px;
+  line-height: 1.6;
+  letter-spacing: -0.04em;
+  overflow: hidden;
+  transition:
+    opacity 0.24s ease,
+    transform 0.24s ease,
+    height 0.14s ease,
+    margin-top 0.24s ease;
+}
+
+.food-chart-content {
+  margin-top: 10px;
+}
+
+.food-chart-panel {
+  display: flex;
+  gap: 8px;
+  padding: 12px 12px 10px;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.food-chart-axis {
+  display: grid;
+  grid-template-rows: repeat(4, 1fr);
+  width: 30px;
+  height: 73px;
+  color: #999999;
+  font-size: 11px;
+  line-height: 1;
+  text-align: right;
+}
+
+.food-chart-axis span {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  transform: translateY(-18%);
+}
+
+.food-chart-plot {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.food-chart-grid {
+  position: relative;
+  display: grid;
+  grid-template-rows: repeat(4, 1fr);
+  height: 73px;
+  z-index: 0;
+}
+
+.food-chart-grid span {
+  display: block;
+  border-top: 1px dotted #ececef;
+}
+
+.food-chart-bars {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  align-items: end;
+  gap: 12px;
+  height: 73px;
+  margin-top: -73px;
+  padding: 0 2px;
+  z-index: 1;
+}
+
+.food-chart-bar {
+  position: relative;
+  display: block;
+  align-self: end;
+  width: 12px;
+  height: var(--bar-height);
+  margin: 0 auto;
+  border-radius: 4px 4px 0 0;
+  background: rgba(255, 95, 147, 0.22);
+}
+
+.food-chart-bar-today {
+  background: #ff4f92;
+}
+
+.food-chart-bar-today em {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%);
+  color: #ff4f92;
+  font-style: normal;
+  font-size: 11px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.food-chart-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+  margin-top: 10px;
+  padding: 0 2px;
+  color: #999999;
+  font-size: 11px;
+  line-height: 1;
+  text-align: center;
+}
+
+.food-card-summary {
+  margin: 8px 0 0;
+  color: #323232;
+  font-size: 17px;
+  line-height: 1.5;
+  letter-spacing: -0.04em;
+}
+
+.feed-card.is-collapsed .feed-chart-chevron {
+  transform: translateY(calc(-50% + 5px)) rotate(180deg);
+}
+
+.feed-card.is-collapsed .feed-chart-content {
+  opacity: 0;
+  transform: none;
+  max-height: 0;
+  margin-top: 0;
+  pointer-events: none;
+}
+
+.feed-card.is-collapsed .feed-chart-panel {
+  margin-top: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.feed-card.is-collapsed .feed-card-summary {
+  height: 0;
+  margin-top: 0;
+}
+
+.summary-char {
+  opacity: 0;
+  animation: summary-char-opacity 0.18s ease forwards;
+}
+
+@keyframes summary-char-opacity {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+
+.feed-summary-highlight {
+  color: #ff5f93;
+}
+
 .content-area {
   position: absolute;
   inset: 0;
@@ -171,6 +1148,10 @@ button {
 .scheme-3 .flyout-wrap {
   right: 11px;
   bottom: 170px;
+}
+
+[data-view-panel="mood-expand"] .flyout-wrap {
+  z-index: 8;
 }
 
 .flyout {
@@ -569,6 +1550,96 @@ button {
   height: auto;
 }
 
+.input-dock-card {
+  bottom: 83px;
+}
+
+.card-input-action {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.mood-expand-card {
+  position: absolute;
+  left: 12px;
+  width: 351px;
+  bottom: 238px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.mood-expand-card.is-entering,
+.mood-expand-card.is-visible,
+.mood-expand-card.is-leaving {
+  pointer-events: auto;
+}
+
+.mood-expand-card-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 351px;
+  height: 107px;
+  padding: 16px 14px 12px;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  transform-origin: top left;
+}
+
+.mood-option {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.mood-option-icon {
+  display: block;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.mood-option-label {
+  color: #323232;
+  font-size: 15px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.mood-expand-card.is-entering .mood-expand-card-inner {
+  animation: mood-card-expand 0.5s cubic-bezier(0.22, 0.8, 0.24, 1) both;
+}
+
+.mood-expand-card.is-entering .mood-option {
+  animation: mood-option-fade 0.4s ease 0.1s both;
+}
+
+.mood-expand-card.is-leaving .mood-expand-card-inner {
+  animation: mood-card-fade-out 0.3s ease both;
+}
+
+.mood-expand-card.is-visible .mood-option {
+  opacity: 1;
+}
+
 .tabbar {
   position: absolute;
   left: 0;
@@ -607,6 +1678,48 @@ button {
   100% {
     transform: translate(var(--shift-x), var(--shift-y));
     opacity: 1;
+  }
+}
+
+@keyframes mood-card-expand {
+  0% {
+    transform: translate(var(--mood-enter-x, 0px), var(--mood-enter-y, 0px))
+      scale(var(--mood-enter-scale-x, 0.16), var(--mood-enter-scale-y, 0.52));
+    border-radius: 999px;
+  }
+
+  18% {
+    border-radius: 20px;
+  }
+
+  55% {
+    transform: translate(0, 0) scale(1.02, 1.02);
+    border-radius: 20px;
+  }
+
+  100% {
+    transform: translate(0, 0) scale(1, 1);
+    border-radius: 20px;
+  }
+}
+
+@keyframes mood-option-fade {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes mood-card-fade-out {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
   }
 }
 

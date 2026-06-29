@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Path App + 动效复刻</title>
+    <title>DiandiDemo</title>
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body class="scheme-3">
@@ -20,55 +20,455 @@
           </div>
         </header>
 
-        <section class="content-area"></section>
-
-        <div class="flyout-wrap">
-          <button class="flyout-btn" type="button" aria-expanded="false" aria-label="Toggle action menu">
-            <span class="flyout-gray-layer" aria-hidden="true"></span>
-            <span class="flyout-plus-icon" aria-hidden="true"></span>
+        <div class="view-switcher" aria-label="页面切换">
+          <button class="view-switch-btn" type="button" data-view-target="quick-record">
+            快捷记录展开收起
           </button>
-
-          <ul class="flyout flyout-init" aria-label="Action menu">
-            <li>
-              <button type="button" aria-label="Records">
-                <span class="option-bg" aria-hidden="true"></span>
-                <span class="icon icon-camera" aria-hidden="true"></span>
-                <span class="option-label">饮食</span>
-              </button>
-            </li>
-            <li>
-              <button type="button" aria-label="Mood">
-                <span class="option-bg" aria-hidden="true"></span>
-                <span class="icon icon-photo" aria-hidden="true"></span>
-                <span class="option-label">心情</span>
-              </button>
-            </li>
-            <li>
-              <button type="button" aria-label="Question">
-                <span class="option-bg" aria-hidden="true"></span>
-                <span class="icon icon-music" aria-hidden="true"></span>
-                <span class="option-label">体重</span>
-              </button>
-            </li>
-            <li>
-              <button type="button" aria-label="Medical">
-                <span class="option-bg" aria-hidden="true"></span>
-                <span class="icon icon-pin" aria-hidden="true"></span>
-                <span class="option-label">症状</span>
-              </button>
-            </li>
-          </ul>
+          <button class="view-switch-btn" type="button" data-view-target="card-output">
+            卡片内容输出
+          </button>
+          <button class="view-switch-btn active" type="button" data-view-target="mood-expand">心情展开</button>
         </div>
 
-        <div class="input-dock">
-          <img src="./assets/输入框.png" alt="输入框" class="input-image" />
-        </div>
+        <section class="view-panel view-panel-demo" data-view-panel="quick-record" hidden>
+          <section class="content-area"></section>
 
-        <nav class="tabbar" aria-label="Bottom navigation">
-          <img src="./assets/TabBar切图.png" alt="底部导航" class="tabbar-image" />
-        </nav>
+          <div class="flyout-wrap" data-mood-flyout-wrap>
+            <button class="flyout-btn" type="button" aria-expanded="false" aria-label="Toggle action menu">
+              <span class="flyout-gray-layer" aria-hidden="true"></span>
+              <span class="flyout-plus-icon" aria-hidden="true"></span>
+            </button>
 
-        <div class="home-indicator" aria-hidden="true"></div>
+            <ul class="flyout flyout-init" aria-label="Action menu">
+              <li>
+                <button type="button" aria-label="Records">
+                  <span class="option-bg" aria-hidden="true"></span>
+                  <span class="icon icon-music" aria-hidden="true"></span>
+                  <span class="option-label">体重</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" aria-label="Mood">
+                  <span class="option-bg" aria-hidden="true"></span>
+                  <span class="icon icon-pin" aria-hidden="true"></span>
+                  <span class="option-label">症状</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" aria-label="Question" data-mood-trigger>
+                  <span class="option-bg" aria-hidden="true"></span>
+                  <span class="icon icon-photo" aria-hidden="true"></span>
+                  <span class="option-label">心情</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" aria-label="Medical">
+                  <span class="option-bg" aria-hidden="true"></span>
+                  <span class="icon icon-camera" aria-hidden="true"></span>
+                  <span class="option-label">饮食</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          <div class="input-dock">
+            <img src="./assets/输入框.png" alt="输入框" class="input-image" />
+          </div>
+
+          <nav class="tabbar" aria-label="Bottom navigation">
+            <img src="./assets/TabBar切图.png" alt="底部导航" class="tabbar-image" />
+          </nav>
+
+          <div class="home-indicator" aria-hidden="true"></div>
+        </section>
+
+        <section class="view-panel view-panel-blank" data-view-panel="card-output" hidden>
+          <section class="card-page-header" aria-label="点滴标题栏">
+            <img src="./assets/标题栏.png" alt="标题栏" class="card-page-header-image" />
+          </section>
+
+          <span class="timeline-line" aria-hidden="true"></span>
+
+          <section class="card-page-body" aria-label="卡片内容输出空白区">
+            <section class="timeline-date-header" aria-label="当天日期信息">
+              <span class="timeline-date-dot" aria-hidden="true"></span>
+              <span class="timeline-date-text" data-today-date>6月16日</span>
+              <span class="timeline-weekday-text" data-today-weekday>周二</span>
+            </section>
+
+            <section class="card-feed" aria-label="信息流">
+              <article class="feed-entry" data-feed-entry hidden>
+                <span class="feed-entry-dot" aria-hidden="true"></span>
+                <section class="feed-card" data-feed-card>
+                  <div class="feed-card-time" data-feed-card-time>9:41</div>
+                  <p class="feed-card-content" data-feed-card-content>
+                    今天中午和很久没见的朋友吃饭，感觉心情很好，晚上称体重是52.3公斤。
+                  </p>
+                  <div class="feed-card-tags" data-feed-card-tags>
+                    <span class="feed-tag feed-tag-mood" data-feed-tag>心情</span>
+                    <span class="feed-tag feed-tag-weight" data-feed-tag>体重</span>
+                  </div>
+                  <div class="feed-card-divider" data-feed-card-divider aria-hidden="true"></div>
+                  <button
+                    class="feed-chart-header"
+                    type="button"
+                    data-feed-chart-header
+                    data-feed-chart-toggle
+                    data-card-collapse-toggle
+                    aria-expanded="true"
+                    aria-label="切换近7天情绪变化曲线内容"
+                  >
+                    <img
+                      src="./assets/AI深度思考.png"
+                      alt=""
+                      class="feed-chart-sparkles"
+                      aria-hidden="true"
+                    />
+                    <span class="feed-chart-title">近7天情绪变化曲线</span>
+                    <span class="feed-chart-chevron" aria-hidden="true">
+                      <img src="./assets/上下箭头.png" alt="" class="feed-chart-chevron-image" />
+                    </span>
+                  </button>
+                  <div class="feed-chart-content" data-feed-chart-content data-card-collapse-content>
+                    <section class="feed-chart-panel" aria-label="近7天情绪变化曲线" data-feed-chart-panel>
+                      <div class="feed-chart-levels">
+                        <span>积极</span>
+                        <span>一般</span>
+                        <span>消极</span>
+                      </div>
+                      <div class="feed-chart-plot">
+                        <div class="feed-chart-bands" aria-hidden="true">
+                          <span class="feed-chart-band feed-chart-band-positive"></span>
+                          <span class="feed-chart-band feed-chart-band-neutral"></span>
+                          <span class="feed-chart-band feed-chart-band-negative"></span>
+                        </div>
+                        <svg viewBox="0 0 257 78" class="feed-chart-svg" aria-hidden="true">
+                          <polyline
+                            class="feed-chart-line"
+                            points="18.36,39 55.07,65 91.79,65 128.50,39 165.21,39 201.93,13 238.64,13"
+                            fill="none"
+                            stroke="#ff6498"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          ></polyline>
+                          <g class="feed-chart-dots" fill="#ff6498">
+                            <circle cx="18.36" cy="39" r="4"></circle>
+                            <circle cx="55.07" cy="65" r="4"></circle>
+                            <circle cx="91.79" cy="65" r="4"></circle>
+                            <circle cx="128.50" cy="39" r="4"></circle>
+                            <circle cx="165.21" cy="39" r="4"></circle>
+                            <circle cx="201.93" cy="13" r="4"></circle>
+                            <circle cx="238.64" cy="13" r="4"></circle>
+                          </g>
+                        </svg>
+                        <div class="feed-chart-days">
+                          <span>周六</span>
+                          <span>周日</span>
+                          <span>周一</span>
+                          <span>周二</span>
+                          <span>周三</span>
+                          <span>周四</span>
+                          <span>今天</span>
+                        </div>
+                      </div>
+                    </section>
+                    <p class="feed-card-summary" data-feed-card-summary>
+                      近7天心情整体在往好的方向走，状态在慢慢变好，<span class="feed-summary-highlight">卵泡期雌激素</span>正在回升，身体和情绪一起在向上走。
+                    </p>
+                  </div>
+                </section>
+              </article>
+
+              <article class="feed-entry feed-entry-food" data-feed-entry-food hidden>
+                <span class="feed-entry-dot" aria-hidden="true"></span>
+                <section class="feed-card feed-card-food">
+                  <div class="feed-card-time">9:41</div>
+                  <img
+                    src="./assets/餐食照片.png"
+                    alt="餐食照片"
+                    class="food-card-photo"
+                    data-food-card-photo
+                  />
+                  <p class="food-card-content" data-food-card-content>
+                    香煎鸡胸肉123千卡，炒土豆丝223千卡，炒青菜100千卡，杂粮饭300千卡。
+                  </p>
+                  <p class="food-card-total" data-food-card-total>总热量：<span class="food-card-total-value">823千卡</span></p>
+                  <div class="feed-card-divider" data-food-card-divider aria-hidden="true"></div>
+                  <button
+                    class="feed-chart-header"
+                    type="button"
+                    data-card-collapse-toggle
+                    aria-expanded="true"
+                    aria-label="切换近7天饮食热量内容"
+                  >
+                    <img
+                      src="./assets/AI深度思考.png"
+                      alt=""
+                      class="feed-chart-sparkles"
+                      aria-hidden="true"
+                    />
+                    <span class="feed-chart-title">近7天饮食热量</span>
+                    <span class="feed-chart-chevron" aria-hidden="true">
+                      <img src="./assets/上下箭头.png" alt="" class="feed-chart-chevron-image" />
+                    </span>
+                  </button>
+                  <div class="feed-chart-content food-chart-content" data-card-collapse-content>
+                    <section class="food-chart-panel" aria-label="近7天饮食热量">
+                      <div class="food-chart-axis">
+                        <span>2000</span>
+                        <span>1500</span>
+                        <span>1000</span>
+                        <span>500</span>
+                      </div>
+                      <div class="food-chart-plot">
+                        <div class="food-chart-grid" aria-hidden="true">
+                          <span></span>
+                          <span></span>
+                          <span></span>
+                          <span></span>
+                        </div>
+                        <div class="food-chart-bars">
+                          <span class="food-chart-bar" style="--bar-height: 0px"></span>
+                          <span class="food-chart-bar" style="--bar-height: 29px"></span>
+                          <span class="food-chart-bar" style="--bar-height: 72px"></span>
+                          <span class="food-chart-bar" style="--bar-height: 78px"></span>
+                          <span class="food-chart-bar" style="--bar-height: 58px"></span>
+                          <span class="food-chart-bar" style="--bar-height: 72px"></span>
+                          <span class="food-chart-bar food-chart-bar-today" style="--bar-height: 29px">
+                            <em>823</em>
+                          </span>
+                        </div>
+                        <div class="food-chart-days">
+                          <span>周六</span>
+                          <span>周日</span>
+                          <span>周一</span>
+                          <span>周二</span>
+                          <span>周三</span>
+                          <span>周四</span>
+                          <span>今天</span>
+                        </div>
+                      </div>
+                    </section>
+                    <p class="food-card-summary" data-food-card-summary>
+                      日均摄入1380千卡，今天吃了5种食物，饮食多样性不错。
+                    </p>
+                  </div>
+                </section>
+              </article>
+            </section>
+          </section>
+
+          <div class="input-dock input-dock-card">
+            <img
+              src="./assets/文字输入框.png"
+              alt="文字输入框"
+              class="input-image"
+              data-card-input-image
+            />
+            <button
+              class="card-input-action"
+              type="button"
+              aria-label="显示卡片内容"
+              data-card-input-toggle
+            ></button>
+          </div>
+
+          <nav class="tabbar" aria-label="Bottom navigation">
+            <img src="./assets/TabBar切图.png" alt="底部导航" class="tabbar-image" />
+          </nav>
+
+          <div class="home-indicator" aria-hidden="true"></div>
+        </section>
+
+        <section class="view-panel view-panel-blank is-active" data-view-panel="mood-expand">
+          <section class="card-page-header" aria-label="点滴标题栏">
+            <img src="./assets/标题栏.png" alt="标题栏" class="card-page-header-image" />
+          </section>
+
+          <span class="timeline-line" aria-hidden="true"></span>
+
+          <section class="card-page-body" aria-label="心情展开空白区">
+            <section class="timeline-date-header" aria-label="当天日期信息">
+              <span class="timeline-date-dot" aria-hidden="true"></span>
+              <span class="timeline-date-text">6月16日</span>
+              <span class="timeline-weekday-text">周二</span>
+            </section>
+
+            <section class="card-feed mood-timeline-feed">
+              <article class="feed-entry mood-feed-entry" data-mood-feed-entry hidden>
+                <span class="feed-entry-dot" aria-hidden="true"></span>
+                <section class="feed-card mood-feed-card">
+                  <div class="feed-card-time" data-mood-feed-time>19:00</div>
+                  <div class="mood-feed-primary" data-mood-feed-primary>
+                    <img src="./assets/心情.png" alt="" class="mood-feed-primary-icon" data-mood-feed-icon aria-hidden="true" />
+                    <p class="mood-feed-primary-text">心情：<span data-mood-feed-text>挺开心</span></p>
+                  </div>
+                  <div class="feed-card-divider mood-feed-divider" data-mood-feed-divider aria-hidden="true"></div>
+                  <button
+                    class="feed-chart-header"
+                    type="button"
+                    data-card-collapse-toggle
+                    aria-expanded="true"
+                    aria-label="切换近7天情绪变化曲线内容"
+                  >
+                    <img
+                      src="./assets/AI深度思考.png"
+                      alt=""
+                      class="feed-chart-sparkles"
+                      aria-hidden="true"
+                    />
+                    <span class="feed-chart-title">近7天情绪变化曲线</span>
+                    <span class="feed-chart-chevron" aria-hidden="true">
+                      <img src="./assets/上下箭头.png" alt="" class="feed-chart-chevron-image" />
+                    </span>
+                  </button>
+                  <div class="feed-chart-content" data-mood-feed-chart-content data-card-collapse-content>
+                    <section class="feed-chart-panel" aria-label="近7天情绪变化曲线" data-mood-feed-chart-panel>
+                      <div class="feed-chart-levels">
+                        <span>积极</span>
+                        <span>一般</span>
+                        <span>消极</span>
+                      </div>
+                      <div class="feed-chart-plot">
+                        <div class="feed-chart-bands" aria-hidden="true">
+                          <span class="feed-chart-band feed-chart-band-positive"></span>
+                          <span class="feed-chart-band feed-chart-band-neutral"></span>
+                          <span class="feed-chart-band feed-chart-band-negative"></span>
+                        </div>
+                        <div class="feed-chart-grid" aria-hidden="true">
+                          <span></span>
+                          <span></span>
+                          <span></span>
+                        </div>
+                        <svg
+                          class="feed-chart-svg"
+                          viewBox="0 0 258 78"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          aria-hidden="true"
+                        >
+                          <path
+                            class="feed-chart-line"
+                            data-mood-feed-chart-line
+                            d="M19 39L55.5 65L92 65L128.5 39L165 39L201.5 13L238 13"
+                            stroke="#FF5F93"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                          <g class="feed-chart-dots" fill="#FF5F93">
+                            <circle cx="19" cy="39" r="4"></circle>
+                            <circle cx="55.5" cy="65" r="4"></circle>
+                            <circle cx="92" cy="65" r="4"></circle>
+                            <circle cx="128.5" cy="39" r="4"></circle>
+                            <circle cx="165" cy="39" r="4"></circle>
+                            <circle cx="201.5" cy="13" r="4"></circle>
+                            <circle cx="238" cy="13" r="4"></circle>
+                          </g>
+                        </svg>
+                        <div class="feed-chart-days">
+                          <span>周六</span>
+                          <span>周日</span>
+                          <span>周一</span>
+                          <span>周二</span>
+                          <span>周三</span>
+                          <span>周四</span>
+                          <span>今天</span>
+                        </div>
+                      </div>
+                    </section>
+                    <p class="feed-card-summary" data-mood-feed-summary>
+                      近7天心情整体在往好的方向走，状态在慢慢变好，<span class="feed-summary-highlight">卵泡期雌激素</span>正在回升，身体和情绪一起在向上走。
+                    </p>
+                  </div>
+                </section>
+              </article>
+            </section>
+          </section>
+
+          <div class="flyout-wrap" data-mood-flyout-wrap>
+            <button class="flyout-btn" type="button" aria-expanded="false" aria-label="Toggle action menu">
+              <span class="flyout-gray-layer" aria-hidden="true"></span>
+              <span class="flyout-plus-icon" aria-hidden="true"></span>
+            </button>
+
+            <ul class="flyout flyout-init" aria-label="Action menu">
+              <li>
+                <button type="button" aria-label="Records">
+                  <span class="option-bg" aria-hidden="true"></span>
+                  <span class="icon icon-music" aria-hidden="true"></span>
+                  <span class="option-label">体重</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" aria-label="Mood">
+                  <span class="option-bg" aria-hidden="true"></span>
+                  <span class="icon icon-pin" aria-hidden="true"></span>
+                  <span class="option-label">症状</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" aria-label="Question" data-mood-trigger>
+                  <span class="option-bg" aria-hidden="true"></span>
+                  <span class="icon icon-photo" aria-hidden="true"></span>
+                  <span class="option-label">心情</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" aria-label="Medical">
+                  <span class="option-bg" aria-hidden="true"></span>
+                  <span class="icon icon-camera" aria-hidden="true"></span>
+                  <span class="option-label">饮食</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          <section class="mood-expand-card" data-mood-card hidden aria-label="心情选项卡片">
+            <div class="mood-expand-card-inner">
+              <button class="mood-option" type="button" aria-label="超开心">
+                <img src="./assets/超开心.png" alt="" class="mood-option-icon" aria-hidden="true" />
+                <span class="mood-option-label">超开心</span>
+              </button>
+              <button class="mood-option" type="button" aria-label="挺开心">
+                <img src="./assets/挺开心.png" alt="" class="mood-option-icon" aria-hidden="true" />
+                <span class="mood-option-label">挺开心</span>
+              </button>
+              <button class="mood-option" type="button" aria-label="一般">
+                <img src="./assets/一般.png" alt="" class="mood-option-icon" aria-hidden="true" />
+                <span class="mood-option-label">一般</span>
+              </button>
+              <button class="mood-option" type="button" aria-label="不开心">
+                <img src="./assets/不开心.png" alt="" class="mood-option-icon" aria-hidden="true" />
+                <span class="mood-option-label">不开心</span>
+              </button>
+              <button class="mood-option" type="button" aria-label="好伤心">
+                <img src="./assets/好伤心.png" alt="" class="mood-option-icon" aria-hidden="true" />
+                <span class="mood-option-label">好伤心</span>
+              </button>
+            </div>
+          </section>
+
+          <div class="input-dock input-dock-card">
+            <img
+              src="./assets/输入框.png"
+              alt="输入框"
+              class="input-image"
+            />
+            <button
+              class="card-input-action"
+              type="button"
+              aria-label="显示卡片内容"
+            ></button>
+          </div>
+
+          <nav class="tabbar" aria-label="Bottom navigation">
+            <img src="./assets/TabBar切图.png" alt="底部导航" class="tabbar-image" />
+          </nav>
+
+          <div class="home-indicator" aria-hidden="true"></div>
+        </section>
       </section>
     </main>
 
