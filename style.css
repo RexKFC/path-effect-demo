@@ -593,6 +593,10 @@ button {
   transform-origin: center bottom;
 }
 
+.feed-entry-food.is-entering .food-chart-bar-today em {
+  transform: translateX(calc(-50% - 0.5px)) scaleY(0);
+}
+
 .feed-chart-content {
   max-height: none;
   overflow: hidden;
@@ -751,6 +755,10 @@ button {
   transition:
     opacity 0.18s ease,
     transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.feed-entry-food.is-entering.is-food-bars-visible .food-chart-bar-today em {
+  transform: translateX(calc(-50% - 0.5px)) scaleY(1);
 }
 
 .feed-entry-food.is-entering.is-food-bars-visible .food-chart-bar:nth-child(1) {
@@ -1108,7 +1116,7 @@ button {
   position: absolute;
   left: 50%;
   bottom: calc(100% + 8px);
-  transform: translateX(-50%);
+  transform: translateX(calc(-50% - 0.5px));
   color: #ff4f92;
   font-style: normal;
   font-size: 11px;
