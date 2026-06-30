@@ -1135,6 +1135,20 @@ document.addEventListener("click", (event) => {
   });
 });
 
+if (moodFlyoutWrap) {
+  moodFlyoutWrap.addEventListener("click", (event) => {
+    if (moodFlyoutWrap.dataset.moodCardOpen !== "true") {
+      return;
+    }
+
+    if (event.target.closest("[data-mood-card]") || event.target.closest(".flyout > li button")) {
+      return;
+    }
+
+    closeMoodCard();
+  });
+}
+
 viewSwitchButtons.forEach((button) => {
   button.addEventListener("click", () => {
     const targetView = button.dataset.viewTarget;
