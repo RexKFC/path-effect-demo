@@ -32,16 +32,16 @@
         </header>
 
         <div class="view-switcher" aria-label="页面切换">
-          <button class="view-switch-btn active" type="button" data-view-target="quick-record">
-            快捷记录展开收起
+          <button class="view-switch-btn" type="button" data-view-target="quick-record">+号交互</button>
+          <button class="view-switch-btn active" type="button" data-view-target="card-output">
+            内容输出
           </button>
-          <button class="view-switch-btn" type="button" data-view-target="card-output" hidden>
-            卡片内容输出
+          <button class="view-switch-btn" type="button" data-view-target="mood-expand">
+            心情快捷记录
           </button>
-          <button class="view-switch-btn" type="button" data-view-target="mood-expand" hidden>心情展开</button>
         </div>
 
-        <section class="view-panel view-panel-demo is-active" data-view-panel="quick-record">
+        <section class="view-panel view-panel-demo" data-view-panel="quick-record" hidden>
           <section class="content-area"></section>
 
           <div class="flyout-wrap" data-mood-flyout-wrap>
@@ -93,7 +93,7 @@
           <div class="home-indicator" aria-hidden="true"></div>
         </section>
 
-        <section class="view-panel view-panel-blank" data-view-panel="card-output" hidden>
+        <section class="view-panel view-panel-blank is-active" data-view-panel="card-output">
           <section class="card-page-header" aria-label="点滴标题栏">
             <img src="./assets/标题栏.png" alt="标题栏" class="card-page-header-image" />
           </section>
@@ -277,6 +277,7 @@
               class="input-image"
               data-card-input-image
             />
+            <span class="card-input-text" data-card-input-text>点击发送，展示记心情动效</span>
             <button
               class="card-input-action"
               type="button"

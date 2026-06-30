@@ -318,6 +318,12 @@ button {
   box-shadow: none;
 }
 
+.feed-entry:not(.feed-entry-food) .feed-card {
+  transform-origin: top left;
+  clip-path: inset(0 round 12px);
+  will-change: clip-path, transform;
+}
+
 .feed-card-time {
   color: #9f9fa5;
   font-size: 15px;
@@ -343,11 +349,26 @@ button {
 
 .mood-feed-card {
   padding-bottom: 12px;
+  transform-origin: top left;
+  transition:
+    clip-path 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: clip-path, transform;
 }
 
 .mood-feed-entry.is-entering .feed-card-time,
 .mood-feed-entry.is-entering .mood-feed-primary {
   opacity: 0;
+}
+
+.mood-feed-entry.is-entering .mood-feed-card {
+  clip-path: inset(0 calc(100% - 44px) calc(100% - 40px) 0 round 12px);
+  transform: scale(0.82);
+}
+
+.mood-feed-entry.is-entering.is-card-shell-visible .mood-feed-card {
+  clip-path: inset(0 round 12px);
+  transform: scale(1);
 }
 
 .mood-feed-entry.is-entering.is-primary-visible .feed-card-time,
@@ -381,6 +402,15 @@ button {
 
 .feed-card-food {
   padding-bottom: 16px;
+}
+
+.feed-entry-food .feed-card-food {
+  transform-origin: top left;
+  clip-path: inset(0 round 12px);
+  transition:
+    clip-path 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.28s ease;
+  will-change: clip-path, opacity;
 }
 
 .food-card-photo {
@@ -476,6 +506,15 @@ button {
   transform: none;
 }
 
+.feed-entry:not(.feed-entry-food).is-entering .feed-card {
+  clip-path: inset(0 calc(100% - 72px) calc(100% - 64px) 0 round 12px);
+  transform: scale(0.22);
+}
+
+.feed-entry:not(.feed-entry-food).is-entering.is-card-shell-visible .feed-card {
+  animation: card-output-shell-expand 0.25s forwards;
+}
+
 .feed-entry:not(.feed-entry-food).is-entering .feed-card-time,
 .feed-entry:not(.feed-entry-food).is-entering .feed-card-content {
   opacity: 0;
@@ -512,6 +551,16 @@ button {
   height: 0;
   margin-top: 0;
   overflow: hidden;
+}
+
+.feed-entry-food.is-entering .feed-card-food {
+  clip-path: inset(0 calc(100% - 72px) calc(100% - 64px) 0 round 12px);
+  opacity: 0.96;
+}
+
+.feed-entry-food.is-entering.is-food-shell-visible .feed-card-food {
+  clip-path: inset(0 round 12px);
+  opacity: 1;
 }
 
 .feed-entry-food.is-entering .feed-card-divider {
@@ -909,7 +958,7 @@ button {
 }
 
 .feed-entry.is-entering.is-green-visible .feed-chart-line {
-  transition: stroke-dashoffset 0.72s cubic-bezier(0.22, 1, 0.36, 1) 0.6s;
+  transition: stroke-dashoffset 0.75s 0.6s;
   stroke-dashoffset: 0;
 }
 
@@ -927,31 +976,31 @@ button {
 }
 
 .feed-entry.is-entering.is-green-visible .feed-chart-dots circle:nth-child(1) {
-  transition-delay: 0.6s;
+  transition-delay: 0.15s;
 }
 
 .feed-entry.is-entering.is-green-visible .feed-chart-dots circle:nth-child(2) {
-  transition-delay: 0.72s;
+  transition-delay: 0.27s;
 }
 
 .feed-entry.is-entering.is-green-visible .feed-chart-dots circle:nth-child(3) {
-  transition-delay: 0.84s;
+  transition-delay: 0.39s;
 }
 
 .feed-entry.is-entering.is-green-visible .feed-chart-dots circle:nth-child(4) {
-  transition-delay: 0.96s;
+  transition-delay: 0.51s;
 }
 
 .feed-entry.is-entering.is-green-visible .feed-chart-dots circle:nth-child(5) {
-  transition-delay: 1.08s;
+  transition-delay: 0.63s;
 }
 
 .feed-entry.is-entering.is-green-visible .feed-chart-dots circle:nth-child(6) {
-  transition-delay: 1.2s;
+  transition-delay: 0.75s;
 }
 
 .feed-entry.is-entering.is-green-visible .feed-chart-dots circle:nth-child(7) {
-  transition-delay: 1.32s;
+  transition-delay: 0.87s;
 }
 
 .feed-chart-days {
@@ -1554,6 +1603,25 @@ button {
   bottom: 83px;
 }
 
+.card-input-text {
+  position: absolute;
+  left: 68px;
+  right: 74px;
+  top: 50%;
+  transform: translateY(calc(-50% + 4px));
+  color: #323232;
+  font-size: 16px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+.card-input-text.is-muted {
+  color: #999999;
+}
+
 .card-input-action {
   position: absolute;
   right: 18px;
@@ -1591,7 +1659,7 @@ button {
   padding: 16px 14px 12px;
   border-radius: 20px;
   background: #ffffff;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transform-origin: top left;
 }
@@ -1657,6 +1725,18 @@ button {
 
 .home-indicator {
   display: none;
+}
+
+@keyframes card-output-shell-expand {
+  from {
+    clip-path: inset(0 calc(100% - 72px) calc(100% - 64px) 0 round 12px);
+    transform: scale(0.22);
+  }
+
+  to {
+    clip-path: inset(0 round 12px);
+    transform: scale(1);
+  }
 }
 
 @keyframes expand {

@@ -4,6 +4,7 @@ const viewPanels = Array.from(document.querySelectorAll("[data-view-panel]"));
 const todayDate = document.querySelector("[data-today-date]");
 const todayWeekday = document.querySelector("[data-today-weekday]");
 const cardInputImage = document.querySelector("[data-card-input-image]");
+const cardInputText = document.querySelector("[data-card-input-text]");
 const cardInputToggle = document.querySelector("[data-card-input-toggle]");
 const cardPageBody = document.querySelector(".card-page-body");
 const feedEntry = document.querySelector("[data-feed-entry]");
@@ -73,10 +74,218 @@ const typingTimers = new WeakMap();
 const startTimers = new WeakMap();
 let foodRevealScrollRaf = null;
 let moodRevealScrollRaf = null;
-const FEED_CHART_FULL_REVEAL_MS = 1280;
+const FEED_CHART_FULL_REVEAL_MS = 500;
 const FEED_SUMMARY_AFTER_CHART_DELAY_MS = 0;
+const FEED_SUMMARY_AFTER_LINE_REVEAL_MS = 700;
 const FOOD_CHART_BASE_REVEAL_MS = 600;
 const FOOD_CHART_BARS_REVEAL_MS = 1040;
+const FEED_CARD_SHELL_EXPAND_MS = 250;
+const FOOD_CARD_SHELL_EXPAND_MS = 250;
+const MOOD_CARD_SHELL_EXPAND_MS = 250;
+const CARD_OUTPUT_PRIMARY_REVEAL_MS = 250;
+const CARD_INPUT_TEXT_STEP_1 = "点击发送，展示记心情动效";
+const CARD_INPUT_TEXT_STEP_2 = "再次点击，展示记饮食动效";
+const CARD_INPUT_TEXT_STEP_3 = "记录生活点滴";
+
+const restoreElementOriginalContent = (element) => {
+  if (!element) {
+    return;
+  }
+
+  if (element.dataset.fullHtml) {
+    element.innerHTML = element.dataset.fullHtml;
+  }
+};
+
+const resetTypedElementState = (element) => {
+  if (!element) {
+    return;
+  }
+
+  clearTypedElementTimers(element);
+  restoreElementOriginalContent(element);
+  element.style.removeProperty("height");
+  element.style.removeProperty("--summary-target-height");
+};
+
+const resetFlyoutWrap = (wrap) => {
+  if (!wrap) {
+    return;
+  }
+
+  const flyoutBtn = wrap.querySelector(".flyout-btn");
+  const flyout = wrap.querySelector(".flyout");
+  const itemButtons = Array.from(wrap.querySelectorAll(".flyout > li button"));
+
+  itemButtons.forEach((button) => button.classList.remove("clicked"));
+  flyoutBtn?.classList.remove("btn-rotate");
+  flyoutBtn?.setAttribute("aria-expanded", "false");
+  flyout?.classList.remove("expand", "contract", "fade");
+  flyout?.classList.add("flyout-init");
+};
+
+const resetCollapsibleCards = (scope) => {
+  if (!scope) {
+    return;
+  }
+
+  scope.querySelectorAll(".feed-card").forEach((card) => {
+    card.classList.remove("is-collapsed");
+  });
+
+  scope.querySelectorAll("[data-card-collapse-toggle]").forEach((toggle) => {
+    toggle.setAttribute("aria-expanded", "true");
+  });
+
+  scope.querySelectorAll("[data-card-collapse-content]").forEach((content) => {
+    content.style.removeProperty("max-height");
+  });
+};
+
+const resetQuickRecordView = () => {
+  const quickRecordPanel = document.querySelector('[data-view-panel="quick-record"]');
+
+  resetFlyoutWrap(quickRecordPanel?.querySelector(".flyout-wrap"));
+};
+
+const resetCardOutputView = () => {
+  const cardOutputPanel = document.querySelector('[data-view-panel="card-output"]');
+
+  if (summaryTypingTimer) {
+    window.clearTimeout(summaryTypingTimer);
+    summaryTypingTimer = null;
+  }
+
+  if (summaryStartTimer) {
+    window.clearTimeout(summaryStartTimer);
+    summaryStartTimer = null;
+  }
+
+  if (foodRevealScrollRaf) {
+    window.cancelAnimationFrame(foodRevealScrollRaf);
+    foodRevealScrollRaf = null;
+  }
+
+  cardInputClickCount = 0;
+
+  if (feedEntry) {
+    feedEntry.hidden = true;
+    feedEntry.classList.remove(
+      "is-entering",
+      "is-card-shell-visible",
+      "is-primary-visible",
+      "is-tags-visible",
+      "is-divider-visible",
+      "is-green-visible",
+      "is-summary-visible",
+    );
+    feedEntry.style.removeProperty("--chart-line-length");
+  }
+
+  if (feedEntryFood) {
+    feedEntryFood.hidden = true;
+    feedEntryFood.classList.remove(
+      "is-entering",
+      "is-food-shell-visible",
+      "is-food-photo-visible",
+      "is-food-content-visible",
+      "is-food-total-visible",
+      "is-food-divider-visible",
+      "is-food-summary-visible",
+      "is-food-chart-visible",
+      "is-food-bars-visible",
+      "is-food-summary-text-visible",
+    );
+  }
+
+  if (cardInputImage) {
+    cardInputImage.src = "./assets/文字输入框.png";
+    cardInputImage.alt = "文字输入框";
+  }
+
+  if (cardInputText) {
+    cardInputText.textContent = CARD_INPUT_TEXT_STEP_1;
+    cardInputText.classList.remove("is-muted");
+  }
+
+  resetTypedElementState(feedCardContent);
+  resetTypedElementState(feedCardSummary);
+  resetTypedElementState(foodCardContent);
+  resetTypedElementState(foodCardTotal);
+  resetTypedElementState(foodCardSummary);
+
+  feedChartContent?.style.removeProperty("max-height");
+  feedCard?.style.removeProperty("--feed-card-expanded-height");
+  cardPageBody?.scrollTo({ top: 0, behavior: "auto" });
+  resetCollapsibleCards(cardOutputPanel);
+};
+
+const resetMoodExpandView = () => {
+  if (moodCardEnterTimer) {
+    window.clearTimeout(moodCardEnterTimer);
+    moodCardEnterTimer = null;
+  }
+
+  if (moodCardLeaveTimer) {
+    window.clearTimeout(moodCardLeaveTimer);
+    moodCardLeaveTimer = null;
+  }
+
+  if (moodRevealScrollRaf) {
+    window.cancelAnimationFrame(moodRevealScrollRaf);
+    moodRevealScrollRaf = null;
+  }
+
+  moodFeedEntryCount = 0;
+
+  if (moodCard) {
+    moodCard.hidden = true;
+    moodCard.style.display = "none";
+    moodCard.classList.remove("is-entering", "is-visible", "is-leaving");
+  }
+
+  if (moodFlyoutWrap) {
+    moodFlyoutWrap.dataset.moodCardOpen = "false";
+    resetFlyoutWrap(moodFlyoutWrap);
+  }
+
+  if (moodTimelineFeed && moodFeedEntry) {
+    Array.from(moodTimelineFeed.querySelectorAll(".mood-feed-entry")).forEach((entry) => {
+      if (entry !== moodFeedEntry) {
+        entry.remove();
+      }
+    });
+  }
+
+  if (moodFeedEntry) {
+    moodFeedEntry.hidden = true;
+    moodFeedEntry.classList.remove(
+      "is-entering",
+      "is-card-shell-visible",
+      "is-primary-visible",
+      "is-tags-visible",
+      "is-divider-visible",
+      "is-green-visible",
+      "is-summary-visible",
+    );
+    moodFeedEntry.style.removeProperty("--chart-line-length");
+  }
+
+  if (moodFeedText) {
+    moodFeedText.textContent = "挺开心";
+  }
+
+  resetTypedElementState(moodFeedSummary);
+  moodFeedChartContent?.style.removeProperty("max-height");
+  moodCardPageBody?.scrollTo({ top: 0, behavior: "auto" });
+  resetCollapsibleCards(moodExpandPanel);
+};
+
+const resetAllViewsToInitialState = () => {
+  resetQuickRecordView();
+  resetCardOutputView();
+  resetMoodExpandView();
+};
 
 const scrollCardPageToBottom = (behavior = "auto") => {
   if (!cardPageBody) {
@@ -378,19 +587,27 @@ const runMoodFeedEntryReveal = (entryElement, options = {}) => {
   syncChartLineLength(entryChartLine, entryElement);
 
   entryElement.classList.remove("is-primary-visible");
+  entryElement.classList.remove("is-card-shell-visible");
   entryElement.classList.remove("is-tags-visible");
   entryElement.classList.remove("is-divider-visible");
   entryElement.classList.remove("is-summary-visible");
   entryElement.classList.remove("is-green-visible");
   entryElement.classList.add("is-entering");
+  entryElement.hidden = false;
 
   if (!withDetail) {
     window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => {
-        entryElement.classList.add("is-primary-visible");
-        scrollMoodPageToBottom("smooth");
+        entryElement.classList.add("is-card-shell-visible");
+        scrollMoodPageToBottom();
       });
     });
+
+    window.setTimeout(() => {
+      entryElement.classList.add("is-primary-visible");
+      scrollMoodPageToBottom("smooth");
+    }, MOOD_CARD_SHELL_EXPAND_MS);
+
     return;
   }
 
@@ -400,15 +617,19 @@ const runMoodFeedEntryReveal = (entryElement, options = {}) => {
 
   window.requestAnimationFrame(() => {
     window.requestAnimationFrame(() => {
-      entryElement.classList.add("is-primary-visible");
-      scrollMoodPageToBottom("smooth");
+      entryElement.classList.add("is-card-shell-visible");
     });
   });
 
   window.setTimeout(() => {
+    entryElement.classList.add("is-primary-visible");
+    scrollMoodPageToBottom("smooth");
+  }, MOOD_CARD_SHELL_EXPAND_MS);
+
+  window.setTimeout(() => {
     entryElement.classList.add("is-divider-visible");
     scrollMoodPageToBottom();
-  }, 300);
+  }, MOOD_CARD_SHELL_EXPAND_MS + 300);
 
   window.setTimeout(() => {
     entryElement.classList.add("is-green-visible");
@@ -434,8 +655,8 @@ const runMoodFeedEntryReveal = (entryElement, options = {}) => {
           scrollMoodPageToBottom();
         },
       });
-    }, FEED_CHART_FULL_REVEAL_MS);
-  }, 540);
+    }, FEED_SUMMARY_AFTER_LINE_REVEAL_MS);
+  }, MOOD_CARD_SHELL_EXPAND_MS + 540);
 };
 
 const createMoodFeedEntry = (optionLabel, withDetail) => {
@@ -457,7 +678,7 @@ const createMoodFeedEntry = (optionLabel, withDetail) => {
     entryElement.querySelector(".feed-card-summary")?.remove();
   }
 
-  entryElement.hidden = false;
+  entryElement.hidden = true;
   return entryElement;
 };
 
@@ -466,6 +687,7 @@ const runFeedEntryReveal = () => {
     return;
   }
 
+  syncChartLineLength(feedChartLine, feedEntry);
   prepareTypedElement(feedCardSummary);
 
   if (summaryTypingTimer) {
@@ -479,27 +701,35 @@ const runFeedEntryReveal = () => {
   }
 
   feedEntry.classList.remove("is-primary-visible");
+  feedEntry.classList.remove("is-card-shell-visible");
   feedEntry.classList.remove("is-tags-visible");
   feedEntry.classList.remove("is-divider-visible");
   feedEntry.classList.remove("is-summary-visible");
   feedEntry.classList.remove("is-green-visible");
   feedEntry.classList.add("is-entering");
+  feedEntry.hidden = false;
   feedCardSummary.style.setProperty("--summary-target-height", "0px");
   feedCardSummary.innerHTML = "";
 
   window.requestAnimationFrame(() => {
     window.requestAnimationFrame(() => {
-      feedEntry.classList.add("is-primary-visible");
+      feedEntry.classList.add("is-card-shell-visible");
     });
   });
 
   window.setTimeout(() => {
+    window.requestAnimationFrame(() => {
+      feedEntry.classList.add("is-primary-visible");
+    });
+  }, CARD_OUTPUT_PRIMARY_REVEAL_MS);
+
+  window.setTimeout(() => {
     feedEntry.classList.add("is-tags-visible");
-  }, 300);
+  }, CARD_OUTPUT_PRIMARY_REVEAL_MS + 300);
 
   summaryStartTimer = window.setTimeout(() => {
     feedEntry.classList.add("is-divider-visible");
-  }, 840);
+  }, CARD_OUTPUT_PRIMARY_REVEAL_MS + 840);
 
   summaryStartTimer = window.setTimeout(() => {
     feedEntry.classList.add("is-green-visible");
@@ -516,8 +746,8 @@ const runFeedEntryReveal = () => {
         startSummaryTypewriter();
         summaryStartTimer = null;
       }, FEED_SUMMARY_AFTER_CHART_DELAY_MS);
-    }, FEED_CHART_FULL_REVEAL_MS);
-  }, 1080);
+    }, FEED_SUMMARY_AFTER_LINE_REVEAL_MS);
+  }, CARD_OUTPUT_PRIMARY_REVEAL_MS + 1080);
 };
 
 const runFoodFeedEntryReveal = () => {
@@ -540,6 +770,7 @@ const runFoodFeedEntryReveal = () => {
   });
 
   feedEntryFood.classList.remove(
+    "is-food-shell-visible",
     "is-food-photo-visible",
     "is-food-content-visible",
     "is-food-total-visible",
@@ -553,9 +784,14 @@ const runFoodFeedEntryReveal = () => {
   keepCardPageBottomVisible();
 
   const primaryStartTimer = window.setTimeout(() => {
-    feedEntryFood.classList.add("is-food-photo-visible");
+    feedEntryFood.classList.add("is-food-shell-visible");
     scrollCardPageToBottom();
   }, 0);
+
+  const photoStartTimer = window.setTimeout(() => {
+    feedEntryFood.classList.add("is-food-photo-visible");
+    scrollCardPageToBottom();
+  }, FOOD_CARD_SHELL_EXPAND_MS);
 
   const textStartTimer = window.setTimeout(() => {
     feedEntryFood.classList.add("is-food-content-visible");
@@ -620,9 +856,10 @@ const runFoodFeedEntryReveal = () => {
 
     startTimers.delete(foodCardContent);
     startTimers.delete(foodCardTotal);
-  }, 300);
+  }, FOOD_CARD_SHELL_EXPAND_MS + 300);
 
   startTimers.set(foodCardContent, primaryStartTimer);
+  startTimers.set(foodCardPhoto, photoStartTimer);
   startTimers.set(foodCardTotal, textStartTimer);
 };
 
@@ -635,13 +872,18 @@ if (cardInputImage && cardInputToggle) {
     cardInputClickCount += 1;
 
     if (cardInputClickCount === 1) {
-      feedEntry.hidden = false;
       cardInputImage.src = "./assets/文字输入框.png";
       cardInputImage.alt = "文字输入框";
+      if (cardInputText) {
+        cardInputText.textContent = CARD_INPUT_TEXT_STEP_2;
+        cardInputText.classList.remove("is-muted");
+      }
       runFeedEntryReveal();
 
       if (cardPageBody) {
-        cardPageBody.scrollTo({ top: cardPageBody.scrollHeight, behavior: "smooth" });
+        window.setTimeout(() => {
+          scrollCardPageToBottom("smooth");
+        }, CARD_OUTPUT_PRIMARY_REVEAL_MS);
       }
 
       return;
@@ -649,6 +891,10 @@ if (cardInputImage && cardInputToggle) {
 
     if (cardInputClickCount === 2) {
       feedEntryFood.hidden = false;
+      if (cardInputText) {
+        cardInputText.textContent = CARD_INPUT_TEXT_STEP_3;
+        cardInputText.classList.add("is-muted");
+      }
       runFoodFeedEntryReveal();
 
       if (cardPageBody) {
@@ -802,7 +1048,6 @@ moodOptionButtons.forEach((button) => {
       if (moodFeedEntryCount === 1) {
         moodFeedText.textContent = optionLabel;
         syncChartLineLength(moodFeedChartLine, moodFeedEntry);
-        moodFeedEntry.hidden = false;
         runMoodFeedEntryReveal(moodFeedEntry, { withDetail: true });
         return;
       }
@@ -894,6 +1139,8 @@ viewSwitchButtons.forEach((button) => {
   button.addEventListener("click", () => {
     const targetView = button.dataset.viewTarget;
 
+    resetAllViewsToInitialState();
+
     viewSwitchButtons.forEach((item) => {
       item.classList.toggle("active", item === button);
     });
@@ -902,16 +1149,5 @@ viewSwitchButtons.forEach((button) => {
       panel.hidden = panel.dataset.viewPanel !== targetView;
       panel.classList.toggle("is-active", panel.dataset.viewPanel === targetView);
     });
-
-    if (targetView !== "quick-record") {
-      flyoutWraps.forEach((wrap) => {
-        const flyout = wrap.querySelector(".flyout");
-        const itemButtons = Array.from(wrap.querySelectorAll(".flyout > li button"));
-
-        itemButtons.forEach((item) => item.classList.remove("clicked"));
-        flyout?.classList.add("flyout-init");
-        closeMenu(wrap);
-      });
-    }
   });
 });
