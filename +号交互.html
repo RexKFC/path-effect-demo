@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>+号交互</title>
+    <meta name="description" content="+号交互" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body class="scheme-3">
+    <main class="page">
+      <section class="phone-shell" aria-label="点滴 +号交互演示">
+        <header class="status-bar" aria-label="iOS status bar">
+          <div class="status-time">9:41</div>
+          <div class="status-icons" aria-hidden="true">
+            <span class="signal">
+              <i></i><i></i><i></i><i></i>
+            </span>
+            <span class="wifi"></span>
+            <span class="battery"><span class="battery-level"></span></span>
+          </div>
+        </header>
+
+        <section class="view-panel view-panel-demo">
+          <section class="content-area"></section>
+
+          <div class="flyout-wrap" data-flyout-wrap>
+            <button class="flyout-btn" type="button" aria-expanded="false" aria-label="展开快捷记录">
+              <span class="flyout-gray-layer" aria-hidden="true"></span>
+              <span class="flyout-plus-icon" aria-hidden="true"></span>
+            </button>
+
+            <ul class="flyout flyout-init" aria-label="快捷记录菜单">
+              <li>
+                <button type="button" aria-label="体重">
+                  <span class="option-bg" aria-hidden="true"></span>
+                  <span class="icon icon-music" aria-hidden="true"></span>
+                  <span class="option-label">体重</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" aria-label="症状">
+                  <span class="option-bg" aria-hidden="true"></span>
+                  <span class="icon icon-pin" aria-hidden="true"></span>
+                  <span class="option-label">症状</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" aria-label="心情">
+                  <span class="option-bg" aria-hidden="true"></span>
+                  <span class="icon icon-photo" aria-hidden="true"></span>
+                  <span class="option-label">心情</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" aria-label="饮食">
+                  <span class="option-bg" aria-hidden="true"></span>
+                  <span class="icon icon-camera" aria-hidden="true"></span>
+                  <span class="option-label">饮食</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          <div class="input-dock">
+            <img src="./assets/输入框.png" alt="输入框" class="input-image" />
+          </div>
+
+          <nav class="tabbar" aria-label="Bottom navigation">
+            <img src="./assets/TabBar切图.png" alt="底部导航" class="tabbar-image" />
+          </nav>
+
+          <div class="home-indicator" aria-hidden="true"></div>
+        </section>
+      </section>
+    </main>
+
+    <script>
+      const flyoutWrap = document.querySelector("[data-flyout-wrap]");
+      const flyoutButton = flyoutWrap?.querySelector(".flyout-btn");
+      const flyoutMenu = flyoutWrap?.querySelector(".flyout");
+      const optionButtons = Array.from(flyoutWrap?.querySelectorAll(".flyout > li button") || []);
+
+      const closeMenu = (animationClass = "contract") => {
+        if (!flyoutButton || !flyoutMenu) {
+          return;
+        }
+
+        flyoutButton.classList.remove("btn-rotate");
+        flyoutMenu.classList.remove("expand", "contract", "fade");
+        flyoutMenu.classList.add(animationClass);
+        flyoutButton.setAttribute("aria-expanded", "false");
+      };
+
+      flyoutButton?.addEventListener("click", () => {
+        if (!flyoutMenu) {
+          return;
+        }
+
+        const isOpen = flyoutMenu.classList.contains("expand");
+
+        optionButtons.forEach((button) => button.classList.remove("clicked"));
+        flyoutMenu.classList.remove("flyout-init", "contract", "fade");
+
+        if (isOpen) {
+          closeMenu();
+          return;
+        }
+
+        flyoutButton.classList.add("btn-rotate");
+        flyoutMenu.classList.add("expand");
+        flyoutButton.setAttribute("aria-expanded", "true");
+      });
+
+      optionButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          optionButtons.forEach((item) => item.classList.remove("clicked"));
+          button.classList.add("clicked");
+          closeMenu("fade");
+        });
+      });
+
+      document.addEventListener("click", (event) => {
+        if (!flyoutMenu?.classList.contains("expand")) {
+          return;
+        }
+
+        if (event.target.closest("[data-flyout-wrap]")) {
+          return;
+        }
+
+        closeMenu();
+      });
+    </script>
+  </body>
+</html>

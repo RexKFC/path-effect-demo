@@ -40,6 +40,20 @@ const moodFeedIcon = moodExpandPanel?.querySelector("[data-mood-feed-icon]");
 const moodFeedText = moodExpandPanel?.querySelector("[data-mood-feed-text]");
 const moodFeedChartContent = moodExpandPanel?.querySelector("[data-mood-feed-chart-content]");
 const moodFeedChartLine = moodExpandPanel?.querySelector("[data-mood-feed-chart-line]");
+const foodCapturePanel = document.querySelector('[data-view-panel="food-capture"]');
+const foodCapturePageBody = foodCapturePanel?.querySelector("[data-food-capture-page-body]");
+const foodFlyoutWrap = foodCapturePanel?.querySelector("[data-food-flyout-wrap]");
+const foodCaptureTimelineFeed = foodCapturePanel?.querySelector(".food-capture-timeline-feed");
+const foodCaptureEntry = foodCapturePanel?.querySelector("[data-food-capture-entry]");
+const foodCameraSheet = foodCapturePanel?.querySelector("[data-food-camera-sheet]");
+const foodCameraCloseButton = foodCapturePanel?.querySelector("[data-food-camera-close]");
+const foodCameraShutterButton = foodCapturePanel?.querySelector("[data-food-camera-shutter]");
+const foodCameraRecognitionText = foodCapturePanel?.querySelector(".food-camera-recognition-text");
+let foodCameraRevealTimer = null;
+let foodCameraCaptureTimer = null;
+let foodCameraRecognitionTextTimer = null;
+let foodCameraScanTimer = null;
+let foodCameraCompletionTimer = null;
 let moodCardEnterTimer = null;
 let moodCardLeaveTimer = null;
 let moodFeedEntryCount = 0;
@@ -74,6 +88,7 @@ const typingTimers = new WeakMap();
 const startTimers = new WeakMap();
 let foodRevealScrollRaf = null;
 let moodRevealScrollRaf = null;
+let foodCaptureRevealScrollRaf = null;
 const FEED_CHART_FULL_REVEAL_MS = 500;
 const FEED_SUMMARY_AFTER_CHART_DELAY_MS = 0;
 const FEED_SUMMARY_AFTER_LINE_REVEAL_MS = 700;
@@ -250,7 +265,7 @@ const resetMoodExpandView = () => {
   }
 
   if (moodTimelineFeed && moodFeedEntry) {
-    Array.from(moodTimelineFeed.querySelectorAll(".mood-feed-entry")).forEach((entry) => {
+    Array.from(moodTimelineFeed.children).forEach((entry) => {
       if (entry !== moodFeedEntry) {
         entry.remove();
       }
@@ -281,10 +296,50 @@ const resetMoodExpandView = () => {
   resetCollapsibleCards(moodExpandPanel);
 };
 
+const resetFoodCaptureView = () => {
+  if (foodCaptureRevealScrollRaf) {
+    window.cancelAnimationFrame(foodCaptureRevealScrollRaf);
+    foodCaptureRevealScrollRaf = null;
+  }
+
+  if (foodCaptureTimelineFeed && foodCaptureEntry) {
+    Array.from(foodCaptureTimelineFeed.children).forEach((entry) => {
+      if (entry !== foodCaptureEntry) {
+        entry.remove();
+      }
+    });
+  }
+
+  if (foodCaptureEntry) {
+    foodCaptureEntry.hidden = true;
+    foodCaptureEntry.classList.remove(
+      "is-entering",
+      "is-food-shell-visible",
+      "is-food-photo-visible",
+      "is-food-content-visible",
+      "is-food-total-visible",
+      "is-food-divider-visible",
+      "is-food-summary-visible",
+      "is-food-chart-visible",
+      "is-food-bars-visible",
+      "is-food-summary-text-visible",
+    );
+  }
+
+  resetTypedElementState(foodCardContent);
+  resetTypedElementState(foodCardTotal);
+  resetTypedElementState(foodCardSummary);
+  foodCapturePageBody?.scrollTo({ top: 0, behavior: "auto" });
+  resetCollapsibleCards(foodCapturePanel);
+  resetFlyoutWrap(foodFlyoutWrap);
+  closeFoodCameraSheet({ immediate: true });
+};
+
 const resetAllViewsToInitialState = () => {
   resetQuickRecordView();
   resetCardOutputView();
   resetMoodExpandView();
+  resetFoodCaptureView();
 };
 
 const scrollCardPageToBottom = (behavior = "auto") => {
@@ -359,6 +414,55 @@ const keepMoodPageBottomVisible = (duration = 2400) => {
   };
 
   moodRevealScrollRaf = window.requestAnimationFrame(tick);
+};
+
+const scrollFoodCapturePageToBottom = (behavior = "auto") => {
+  if (!foodCapturePageBody) {
+    return;
+  }
+
+  foodCapturePageBody.scrollTo({
+    top: foodCapturePageBody.scrollHeight,
+    behavior,
+  });
+};
+
+const keepFoodCapturePageBottomVisible = (duration = 2400) => {
+  if (!foodCapturePageBody) {
+    return;
+  }
+
+  if (foodCaptureRevealScrollRaf) {
+    window.cancelAnimationFrame(foodCaptureRevealScrollRaf);
+    foodCaptureRevealScrollRaf = null;
+  }
+
+  const startTime = performance.now();
+
+  const tick = (now) => {
+    scrollFoodCapturePageToBottom();
+
+    if (now - startTime < duration) {
+      foodCaptureRevealScrollRaf = window.requestAnimationFrame(tick);
+      return;
+    }
+
+    foodCaptureRevealScrollRaf = null;
+  };
+
+  foodCaptureRevealScrollRaf = window.requestAnimationFrame(tick);
+};
+
+const createFoodTimelineEntry = () => {
+  if (!foodCaptureEntry) {
+    return null;
+  }
+
+  const entryElement = foodCaptureEntry.cloneNode(true);
+  entryElement.hidden = true;
+  entryElement.classList.add("timeline-generated-food-entry");
+  entryElement.removeAttribute("data-food-capture-entry");
+  return entryElement;
 };
 
 const flattenSummaryNodes = (node, activeClassName = "") => {
@@ -863,6 +967,113 @@ const runFoodFeedEntryReveal = () => {
   startTimers.set(foodCardTotal, textStartTimer);
 };
 
+const runFoodFeedEntryRevealFor = (entryElement, options = {}) => {
+  if (!entryElement) {
+    return;
+  }
+
+  const { scrollToBottom = () => {}, keepBottomVisible = () => {} } = options;
+  const entryPhoto = entryElement.querySelector(".food-card-photo");
+  const entryContent = entryElement.querySelector("[data-food-card-content]");
+  const entryTotal = entryElement.querySelector("[data-food-card-total]");
+  const entrySummary = entryElement.querySelector(".food-card-summary");
+
+  if (!entryPhoto || !entryContent || !entryTotal || !entrySummary) {
+    return;
+  }
+
+  [entryContent, entryTotal, entrySummary].forEach((element) => {
+    prepareTypedElement(element);
+    clearTypedElementTimers(element);
+    element.innerHTML = "";
+    setTypedElementHeight(element, 0);
+  });
+
+  entryElement.classList.remove(
+    "is-food-shell-visible",
+    "is-food-photo-visible",
+    "is-food-content-visible",
+    "is-food-total-visible",
+    "is-food-divider-visible",
+    "is-food-summary-visible",
+    "is-food-chart-visible",
+    "is-food-bars-visible",
+    "is-food-summary-text-visible",
+  );
+  entryElement.classList.add("is-entering");
+  entryElement.hidden = false;
+  keepBottomVisible();
+
+  window.setTimeout(() => {
+    entryElement.classList.add("is-food-shell-visible");
+    scrollToBottom();
+  }, 0);
+
+  window.setTimeout(() => {
+    entryElement.classList.add("is-food-photo-visible");
+    scrollToBottom();
+  }, FOOD_CARD_SHELL_EXPAND_MS);
+
+  window.setTimeout(() => {
+    entryElement.classList.add("is-food-content-visible");
+    setTypedElementHeight(entryContent, getElementFirstLineHeight(entryContent, 1.45));
+    scrollToBottom();
+
+    startTypewriterForElement(entryContent, {
+      onCharacter: () => {
+        scrollToBottom();
+      },
+      onDone: () => {
+        entryElement.classList.add("is-food-total-visible");
+        setTypedElementHeight(entryTotal, getElementFirstLineHeight(entryTotal, 1.2));
+        scrollToBottom();
+
+        startTypewriterForElement(entryTotal, {
+          onCharacter: () => {
+            scrollToBottom();
+          },
+          onDone: () => {
+            window.setTimeout(() => {
+              entryElement.classList.add("is-food-divider-visible");
+              scrollToBottom();
+
+              window.setTimeout(() => {
+                entryElement.classList.add("is-food-summary-visible");
+                scrollToBottom();
+
+                window.setTimeout(() => {
+                  entryElement.classList.add("is-food-chart-visible");
+                  scrollToBottom();
+                }, 0);
+
+                window.setTimeout(() => {
+                  entryElement.classList.add("is-food-bars-visible");
+                  scrollToBottom();
+                }, FOOD_CHART_BASE_REVEAL_MS);
+
+                window.setTimeout(() => {
+                  entryElement.classList.add("is-food-summary-text-visible");
+                  setTypedElementHeight(
+                    entrySummary,
+                    getElementFirstLineHeight(entrySummary, 1.5),
+                  );
+                  scrollToBottom();
+
+                  startTypewriterForElement(entrySummary, {
+                    onCharacter: () => {
+                      scrollToBottom();
+                    },
+                  });
+                }, FOOD_CHART_BARS_REVEAL_MS);
+              }, 240);
+            }, 120);
+          },
+        });
+      },
+    });
+  }, FOOD_CARD_SHELL_EXPAND_MS + 300);
+};
+
 if (cardInputImage && cardInputToggle) {
   cardInputToggle.addEventListener("click", () => {
     if (!feedEntry || !feedEntryFood) {
@@ -1034,6 +1245,127 @@ const closeMoodCard = (onDone) => {
   }, 300);
 };
 
+const openFoodCameraSheet = () => {
+  if (!foodCameraSheet) {
+    return;
+  }
+
+  if (foodCameraRevealTimer) {
+    window.clearTimeout(foodCameraRevealTimer);
+    foodCameraRevealTimer = null;
+  }
+
+  if (foodCameraCaptureTimer) {
+    window.clearTimeout(foodCameraCaptureTimer);
+    foodCameraCaptureTimer = null;
+  }
+
+  if (foodCameraRecognitionTextTimer) {
+    window.clearTimeout(foodCameraRecognitionTextTimer);
+    foodCameraRecognitionTextTimer = null;
+  }
+
+  if (foodCameraScanTimer) {
+    window.clearTimeout(foodCameraScanTimer);
+    foodCameraScanTimer = null;
+  }
+
+  if (foodCameraCompletionTimer) {
+    window.clearTimeout(foodCameraCompletionTimer);
+    foodCameraCompletionTimer = null;
+  }
+
+  closeMenu(foodFlyoutWrap, "fade");
+  foodCameraSheet.classList.remove(
+    "is-photo-visible",
+    "is-capturing",
+    "is-recognizing",
+    "is-scan-active",
+  );
+  if (foodCameraRecognitionText) {
+    foodCameraRecognitionText.textContent = "正在识别食物...";
+  }
+  foodCameraSheet.hidden = false;
+
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      foodCameraSheet.classList.add("is-visible");
+    });
+  });
+
+  foodCameraRevealTimer = window.setTimeout(() => {
+    foodCameraSheet.classList.add("is-photo-visible");
+    foodCameraRevealTimer = null;
+  }, 380);
+};
+
+const closeFoodCameraSheet = (options = {}) => {
+  const { immediate = false, onDone } = options;
+
+  if (!foodCameraSheet) {
+    return;
+  }
+
+  if (foodCameraRevealTimer) {
+    window.clearTimeout(foodCameraRevealTimer);
+    foodCameraRevealTimer = null;
+  }
+
+  if (foodCameraCaptureTimer) {
+    window.clearTimeout(foodCameraCaptureTimer);
+    foodCameraCaptureTimer = null;
+  }
+
+  if (foodCameraRecognitionTextTimer) {
+    window.clearTimeout(foodCameraRecognitionTextTimer);
+    foodCameraRecognitionTextTimer = null;
+  }
+
+  if (foodCameraScanTimer) {
+    window.clearTimeout(foodCameraScanTimer);
+    foodCameraScanTimer = null;
+  }
+
+  if (foodCameraCompletionTimer) {
+    window.clearTimeout(foodCameraCompletionTimer);
+    foodCameraCompletionTimer = null;
+  }
+
+  if (immediate) {
+    foodCameraSheet.classList.remove(
+      "is-visible",
+      "is-photo-visible",
+      "is-capturing",
+      "is-recognizing",
+      "is-scan-active",
+    );
+    if (foodCameraRecognitionText) {
+      foodCameraRecognitionText.textContent = "正在识别食物...";
+    }
+    foodCameraSheet.hidden = true;
+    onDone?.();
+    return;
+  }
+
+  foodCameraSheet.classList.remove(
+    "is-visible",
+    "is-photo-visible",
+    "is-capturing",
+    "is-recognizing",
+    "is-scan-active",
+  );
+  if (foodCameraRecognitionText) {
+    foodCameraRecognitionText.textContent = "正在识别食物...";
+  }
+
+  window.setTimeout(() => {
+    if (!foodCameraSheet.classList.contains("is-visible")) {
+      foodCameraSheet.hidden = true;
+      onDone?.();
+    }
+  }, 380);
+};
+
 moodOptionButtons.forEach((button) => {
   button.addEventListener("click", () => {
     if (!moodFeedEntry || !moodFeedText || !moodTimelineFeed) {
@@ -1102,11 +1434,89 @@ flyoutWraps.forEach((wrap) => {
         return;
       }
 
+      if (button.hasAttribute("data-food-trigger") && wrap === foodFlyoutWrap) {
+        itemButtons.forEach((item) => item.classList.remove("clicked"));
+        button.classList.add("clicked");
+        openFoodCameraSheet();
+        return;
+      }
+
       itemButtons.forEach((item) => item.classList.remove("clicked"));
       button.classList.add("clicked");
       closeMenu(wrap, "fade");
     });
   });
+});
+
+foodCameraCloseButton?.addEventListener("click", () => {
+  closeFoodCameraSheet();
+});
+
+foodCameraShutterButton?.addEventListener("click", () => {
+  if (
+    !foodCameraSheet ||
+    foodCameraSheet.hidden ||
+    !foodCameraSheet.classList.contains("is-photo-visible") ||
+    foodCameraSheet.classList.contains("is-capturing")
+  ) {
+    return;
+  }
+
+  if (foodCameraCaptureTimer) {
+    window.clearTimeout(foodCameraCaptureTimer);
+    foodCameraCaptureTimer = null;
+  }
+
+  foodCameraSheet.classList.add("is-capturing");
+
+  if (foodCameraRecognitionText) {
+    foodCameraRecognitionText.textContent = "正在识别食物...";
+  }
+
+  foodCameraSheet.classList.add("is-scan-active");
+
+  foodCameraRecognitionTextTimer = window.setTimeout(() => {
+    if (foodCameraRecognitionText) {
+      foodCameraRecognitionText.textContent = "正在分析食物...";
+    }
+    foodCameraRecognitionTextTimer = null;
+  }, 2000);
+
+  foodCameraCaptureTimer = window.setTimeout(() => {
+    foodCameraSheet.classList.add("is-recognizing");
+    foodCameraCaptureTimer = null;
+  }, 420);
+
+  foodCameraScanTimer = window.setTimeout(() => {
+    if (foodCameraSheet) {
+      foodCameraSheet.classList.remove("is-scan-active");
+    }
+    foodCameraScanTimer = null;
+  }, 4000);
+
+  foodCameraCompletionTimer = window.setTimeout(() => {
+    closeFoodCameraSheet({
+      onDone: () => {
+        if (!foodCaptureTimelineFeed) {
+          return;
+        }
+
+        const foodTimelineEntry = createFoodTimelineEntry();
+
+        if (!foodTimelineEntry) {
+          return;
+        }
+
+        foodCaptureTimelineFeed.appendChild(foodTimelineEntry);
+        scrollFoodCapturePageToBottom();
+        runFoodFeedEntryRevealFor(foodTimelineEntry, {
+          scrollToBottom: () => scrollFoodCapturePageToBottom(),
+          keepBottomVisible: () => keepFoodCapturePageBottomVisible(4200),
+        });
+      },
+    });
+    foodCameraCompletionTimer = null;
+  }, 4000);
 });
 
 document.addEventListener("click", (event) => {

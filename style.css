@@ -343,6 +343,11 @@ button {
   padding-top: 49px;
 }
 
+.food-capture-timeline-feed {
+  padding-top: 49px;
+  padding-bottom: 156px;
+}
+
 .mood-feed-entry + .mood-feed-entry {
   margin-top: 16px;
 }
@@ -1590,6 +1595,452 @@ button {
 
 .icon-pin {
   background-image: url("./assets/症状.png");
+}
+
+.food-camera-sheet {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  overflow: hidden;
+  background: #000;
+  transform: translateY(100%);
+  transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.food-camera-sheet.is-visible {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.food-camera-background {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 100%;
+  background: url("./assets/底图.png") no-repeat center / cover;
+  opacity: 0;
+  transition:
+    top 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.18s ease;
+}
+
+.food-camera-sheet.is-photo-visible .food-camera-background {
+  opacity: 1;
+}
+
+.food-camera-sheet.is-capturing .food-camera-background,
+.food-camera-sheet.is-recognizing .food-camera-background {
+  top: calc(50% - 280px);
+  height: 500px;
+}
+
+.food-camera-status-bar {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 34px 24px 12px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.food-camera-status-icons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.food-camera-signal {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 14px;
+}
+
+.food-camera-signal i {
+  display: block;
+  width: 4px;
+  background: #fff;
+  border-radius: 999px;
+}
+
+.food-camera-signal i:nth-child(1) {
+  height: 5px;
+}
+
+.food-camera-signal i:nth-child(2) {
+  height: 8px;
+}
+
+.food-camera-signal i:nth-child(3) {
+  height: 11px;
+}
+
+.food-camera-signal i:nth-child(4) {
+  height: 14px;
+}
+
+.food-camera-wifi {
+  position: relative;
+  width: 15px;
+  height: 11px;
+}
+
+.food-camera-wifi::before,
+.food-camera-wifi::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  border: 2px solid transparent;
+  border-top-color: #fff;
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+
+.food-camera-wifi::before {
+  top: 0;
+  width: 15px;
+  height: 11px;
+}
+
+.food-camera-wifi::after {
+  top: 4px;
+  width: 9px;
+  height: 7px;
+}
+
+.food-camera-battery {
+  position: relative;
+  width: 27px;
+  height: 13px;
+  border: 1.8px solid #fff;
+  border-radius: 3.5px;
+}
+
+.food-camera-battery::after {
+  content: "";
+  position: absolute;
+  right: -3.8px;
+  top: 3px;
+  width: 2.5px;
+  height: 5px;
+  border-radius: 0 2px 2px 0;
+  background: #fff;
+}
+
+.food-camera-battery-level {
+  position: absolute;
+  left: 1.8px;
+  top: 1.8px;
+  right: 5px;
+  bottom: 1.8px;
+  border-radius: 2px;
+  background: #fff;
+}
+
+.food-camera-close {
+  position: absolute;
+  left: 12px;
+  top: 52px;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.food-camera-close span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 2.5px;
+  height: 25px;
+  border-radius: 999px;
+  background: #fff;
+  transform-origin: center;
+}
+
+.food-camera-close span:first-child {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.food-camera-close span:last-child {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.food-camera-frame {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: 167px;
+  height: 436px;
+  z-index: 2;
+  transition: opacity 0.18s ease;
+}
+
+.food-camera-corner {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  background: url("./assets/拍照定位.png") no-repeat center / contain;
+}
+
+.food-camera-corner-tl {
+  left: 0;
+  top: 0;
+}
+
+.food-camera-corner-tr {
+  right: 0;
+  top: 0;
+  transform: scaleX(-1);
+}
+
+.food-camera-corner-bl {
+  left: 0;
+  bottom: 0;
+  transform: scaleY(-1);
+}
+
+.food-camera-corner-br {
+  right: 0;
+  bottom: 0;
+  transform: scale(-1);
+}
+
+.food-camera-tip {
+  position: absolute;
+  left: 50%;
+  bottom: 209px;
+  z-index: 2;
+  margin: 0;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.14);
+  transition: opacity 0.18s ease;
+}
+
+.food-camera-actions {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 44px;
+  z-index: 2;
+  height: 120px;
+  transition: opacity 0.22s ease;
+}
+
+.food-camera-album,
+.food-camera-shutter {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.food-camera-album {
+  left: 10px;
+  bottom: 33px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+.food-camera-album img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.food-camera-shutter {
+  left: 50%;
+  bottom: 20px;
+  width: 74px;
+  height: 74px;
+  transform: translateX(-50%);
+}
+
+.food-camera-shutter img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.food-camera-home-indicator {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  z-index: 2;
+  width: 134px;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.98);
+  transform: translateX(-50%);
+}
+
+.food-camera-recognition {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease 0.16s;
+}
+
+.food-camera-recognition-preview {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% - 280px);
+  height: 500px;
+  overflow: hidden;
+}
+
+.food-camera-recognition-image {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+.food-camera-recognition-scan {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: auto;
+  display: block;
+  transform: translateY(-100%);
+  opacity: 0;
+  transition: opacity 0.18s ease 0.22s;
+}
+
+.food-camera-recognition-progress {
+  position: absolute;
+  left: 36px;
+  right: 36px;
+  bottom: 160px;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  transition: opacity 0.2s ease 0.24s;
+}
+
+.food-camera-recognition-progress-bar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 1) 100%);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.food-camera-recognition-text {
+  position: absolute;
+  left: 50%;
+  bottom: 130px;
+  margin: 0;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.2;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.2s ease 0.24s;
+}
+
+.food-camera-sheet.is-capturing .food-camera-frame,
+.food-camera-sheet.is-capturing .food-camera-tip,
+.food-camera-sheet.is-capturing .food-camera-actions,
+.food-camera-sheet.is-recognizing .food-camera-frame,
+.food-camera-sheet.is-recognizing .food-camera-tip,
+.food-camera-sheet.is-recognizing .food-camera-actions {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.food-camera-sheet.is-capturing .food-camera-recognition,
+.food-camera-sheet.is-recognizing .food-camera-recognition {
+  opacity: 1;
+}
+
+.food-camera-sheet.is-capturing .food-camera-recognition-scan,
+.food-camera-sheet.is-recognizing .food-camera-recognition-scan,
+.food-camera-sheet.is-capturing .food-camera-recognition-progress,
+.food-camera-sheet.is-recognizing .food-camera-recognition-progress,
+.food-camera-sheet.is-capturing .food-camera-recognition-text,
+.food-camera-sheet.is-recognizing .food-camera-recognition-text {
+  opacity: 1;
+}
+
+.food-camera-sheet.is-scan-active .food-camera-recognition-scan {
+  animation: food-camera-scan-move 2.2s linear infinite;
+}
+
+.food-camera-sheet.is-capturing .food-camera-recognition-progress-bar,
+.food-camera-sheet.is-recognizing .food-camera-recognition-progress-bar {
+  animation: food-camera-progress-load 4s ease-out forwards;
+}
+
+@keyframes food-camera-progress-load {
+  from {
+    transform: scaleX(0);
+  }
+
+  30% {
+    transform: scaleX(0.3);
+  }
+
+  36.25% {
+    transform: scaleX(0.3);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes food-camera-scan-move {
+  from {
+    transform: translateY(-100%);
+  }
+
+  62.5% {
+    transform: translateY(500px);
+  }
+
+  75% {
+    transform: translateY(500px);
+  }
+
+  75.01% {
+    transform: translateY(-100%);
+  }
+
+  to {
+    transform: translateY(-100%);
+  }
 }
 
 .input-dock {

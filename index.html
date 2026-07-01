@@ -39,6 +39,9 @@
           <button class="view-switch-btn" type="button" data-view-target="mood-expand">
             心情快捷记录
           </button>
+          <button class="view-switch-btn" type="button" data-view-target="food-capture">
+            拍照记饮食
+          </button>
         </div>
 
         <section class="view-panel view-panel-demo" data-view-panel="quick-record" hidden>
@@ -73,10 +76,10 @@
                 </button>
               </li>
               <li>
-                <button type="button" aria-label="Medical">
+                <button type="button" aria-label="Question">
                   <span class="option-bg" aria-hidden="true"></span>
-                  <span class="icon icon-camera" aria-hidden="true"></span>
-                  <span class="option-label">饮食</span>
+                  <span class="icon icon-music" aria-hidden="true"></span>
+                  <span class="option-label">体重</span>
                 </button>
               </li>
             </ul>
@@ -460,6 +463,209 @@
                 <span class="mood-option-label">好伤心</span>
               </button>
             </div>
+          </section>
+
+          <div class="input-dock input-dock-card">
+            <img
+              src="./assets/输入框.png"
+              alt="输入框"
+              class="input-image"
+            />
+            <button
+              class="card-input-action"
+              type="button"
+              aria-label="显示卡片内容"
+            ></button>
+          </div>
+
+          <nav class="tabbar" aria-label="Bottom navigation">
+            <img src="./assets/TabBar切图.png" alt="底部导航" class="tabbar-image" />
+          </nav>
+
+          <div class="home-indicator" aria-hidden="true"></div>
+        </section>
+
+        <section class="view-panel view-panel-blank" data-view-panel="food-capture" hidden>
+          <section class="card-page-header" aria-label="点滴标题栏">
+            <img src="./assets/标题栏.png" alt="标题栏" class="card-page-header-image" />
+          </section>
+
+          <span class="timeline-line" aria-hidden="true"></span>
+
+          <section class="card-page-body" aria-label="饮食记录空白区" data-food-capture-page-body>
+            <section class="timeline-date-header" aria-label="当天日期信息">
+              <span class="timeline-date-dot" aria-hidden="true"></span>
+              <span class="timeline-date-text">6月16日</span>
+              <span class="timeline-weekday-text">周二</span>
+            </section>
+
+            <section class="card-feed food-capture-timeline-feed">
+              <article class="feed-entry feed-entry-food" data-food-capture-entry hidden>
+                <span class="feed-entry-dot" aria-hidden="true"></span>
+                <section class="feed-card feed-card-food">
+                  <div class="feed-card-time">9:41</div>
+                  <img
+                    src="./assets/餐食照片.png"
+                    alt="餐食照片"
+                    class="food-card-photo"
+                    data-food-card-photo
+                  />
+                  <p class="food-card-content" data-food-card-content>
+                    香煎鸡胸肉123千卡，炒土豆丝223千卡，炒青菜100千卡，杂粮饭300千卡。
+                  </p>
+                  <p class="food-card-total" data-food-card-total>总热量：<span class="food-card-total-value">823千卡</span></p>
+                  <div class="feed-card-divider" data-food-card-divider aria-hidden="true"></div>
+                  <button
+                    class="feed-chart-header"
+                    type="button"
+                    data-card-collapse-toggle
+                    aria-expanded="true"
+                    aria-label="切换近7天饮食热量内容"
+                  >
+                    <img
+                      src="./assets/AI深度思考.png"
+                      alt=""
+                      class="feed-chart-sparkles"
+                      aria-hidden="true"
+                    />
+                    <span class="feed-chart-title">近7天饮食热量</span>
+                    <span class="feed-chart-chevron" aria-hidden="true">
+                      <img src="./assets/上下箭头.png" alt="" class="feed-chart-chevron-image" />
+                    </span>
+                  </button>
+                  <div class="feed-chart-content food-chart-content" data-card-collapse-content>
+                    <section class="food-chart-panel" aria-label="近7天饮食热量">
+                      <div class="food-chart-axis">
+                        <span>2000</span>
+                        <span>1500</span>
+                        <span>1000</span>
+                        <span>500</span>
+                      </div>
+                      <div class="food-chart-plot">
+                        <div class="food-chart-grid" aria-hidden="true">
+                          <span></span>
+                          <span></span>
+                          <span></span>
+                          <span></span>
+                        </div>
+                        <div class="food-chart-bars">
+                          <span class="food-chart-bar" style="--bar-height: 0px"></span>
+                          <span class="food-chart-bar" style="--bar-height: 29px"></span>
+                          <span class="food-chart-bar" style="--bar-height: 72px"></span>
+                          <span class="food-chart-bar" style="--bar-height: 78px"></span>
+                          <span class="food-chart-bar" style="--bar-height: 58px"></span>
+                          <span class="food-chart-bar" style="--bar-height: 72px"></span>
+                          <span class="food-chart-bar food-chart-bar-today" style="--bar-height: 29px">
+                            <em>823</em>
+                          </span>
+                        </div>
+                        <div class="food-chart-days">
+                          <span>周六</span>
+                          <span>周日</span>
+                          <span>周一</span>
+                          <span>周二</span>
+                          <span>周三</span>
+                          <span>周四</span>
+                          <span>今天</span>
+                        </div>
+                      </div>
+                    </section>
+                    <p class="food-card-summary" data-food-card-summary>
+                      日均摄入1380千卡，今天吃了5种食物，饮食多样性不错。
+                    </p>
+                  </div>
+                </section>
+              </article>
+            </section>
+          </section>
+
+          <div class="flyout-wrap" data-food-flyout-wrap>
+            <button class="flyout-btn" type="button" aria-expanded="false" aria-label="Toggle action menu">
+              <span class="flyout-gray-layer" aria-hidden="true"></span>
+              <span class="flyout-plus-icon" aria-hidden="true"></span>
+            </button>
+
+            <ul class="flyout flyout-init" aria-label="Action menu">
+              <li>
+                <button type="button" aria-label="Records">
+                  <span class="option-bg" aria-hidden="true"></span>
+                  <span class="icon icon-music" aria-hidden="true"></span>
+                  <span class="option-label">体重</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" aria-label="Mood">
+                  <span class="option-bg" aria-hidden="true"></span>
+                  <span class="icon icon-pin" aria-hidden="true"></span>
+                  <span class="option-label">症状</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" aria-label="Question">
+                  <span class="option-bg" aria-hidden="true"></span>
+                  <span class="icon icon-photo" aria-hidden="true"></span>
+                  <span class="option-label">心情</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" aria-label="Medical" data-food-trigger>
+                  <span class="option-bg" aria-hidden="true"></span>
+                  <span class="icon icon-camera" aria-hidden="true"></span>
+                  <span class="option-label">饮食</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          <section class="food-camera-sheet" data-food-camera-sheet hidden aria-label="饮食拍照页">
+            <div class="food-camera-background" aria-hidden="true"></div>
+
+            <header class="food-camera-status-bar" aria-label="iOS status bar">
+              <div class="food-camera-status-time">9:41</div>
+              <div class="food-camera-status-icons" aria-hidden="true">
+                <span class="food-camera-signal">
+                  <i></i><i></i><i></i><i></i>
+                </span>
+                <span class="food-camera-wifi"></span>
+                <span class="food-camera-battery"><span class="food-camera-battery-level"></span></span>
+              </div>
+            </header>
+
+            <button class="food-camera-close" type="button" aria-label="关闭拍照页" data-food-camera-close>
+              <span></span>
+              <span></span>
+            </button>
+
+            <div class="food-camera-frame" aria-hidden="true">
+              <span class="food-camera-corner food-camera-corner-tl"></span>
+              <span class="food-camera-corner food-camera-corner-tr"></span>
+              <span class="food-camera-corner food-camera-corner-bl"></span>
+              <span class="food-camera-corner food-camera-corner-br"></span>
+            </div>
+
+            <p class="food-camera-tip">向下俯拍食物确保在取景框内</p>
+
+            <div class="food-camera-actions">
+              <button class="food-camera-album" type="button" aria-label="打开相册">
+                <img src="./assets/相册.png" alt="" aria-hidden="true" />
+              </button>
+              <button class="food-camera-shutter" type="button" aria-label="拍摄" data-food-camera-shutter>
+                <img src="./assets/拍摄.png" alt="" aria-hidden="true" />
+              </button>
+            </div>
+
+            <section class="food-camera-recognition" aria-label="识别中页面">
+              <div class="food-camera-recognition-preview">
+                <div class="food-camera-recognition-image" aria-hidden="true"></div>
+                <img src="./assets/扫描.png" alt="" class="food-camera-recognition-scan" aria-hidden="true" />
+              </div>
+              <div class="food-camera-recognition-progress" aria-hidden="true">
+                <span class="food-camera-recognition-progress-bar"></span>
+              </div>
+              <p class="food-camera-recognition-text">正在识别食物...</p>
+            </section>
+
+            <div class="food-camera-home-indicator" aria-hidden="true"></div>
           </section>
 
           <div class="input-dock input-dock-card">

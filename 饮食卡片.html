@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>饮食卡片</title>
+    <meta name="description" content="饮食卡片" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body class="scheme-3">
+    <main class="page">
+      <section class="phone-shell" aria-label="点滴饮食卡片演示">
+        <section class="view-panel view-panel-blank is-active">
+          <section class="card-page-header" aria-label="点滴标题栏">
+            <img src="./assets/标题栏.png" alt="标题栏" class="card-page-header-image" />
+          </section>
+
+          <span class="timeline-line" aria-hidden="true"></span>
+
+          <section class="card-page-body">
+            <section class="timeline-date-header" aria-label="当天日期信息">
+              <span class="timeline-date-dot" aria-hidden="true"></span>
+              <span class="timeline-date-text" data-today-date>6月16日</span>
+              <span class="timeline-weekday-text" data-today-weekday>周二</span>
+            </section>
+
+            <section class="card-feed" aria-label="信息流">
+              <article class="feed-entry feed-entry-food" data-feed-entry-food hidden>
+                <span class="feed-entry-dot" aria-hidden="true"></span>
+                <section class="feed-card feed-card-food">
+                  <div class="feed-card-time">9:41</div>
+                  <img
+                    src="./assets/餐食照片.png"
+                    alt="餐食照片"
+                    class="food-card-photo"
+                    data-food-card-photo
+                  />
+                  <p class="food-card-content" data-food-card-content>
+                    香煎鸡胸肉123千卡，炒土豆丝223千卡，炒青菜100千卡，杂粮饭300千卡。
+                  </p>
+                  <p class="food-card-total" data-food-card-total>
+                    总热量：<span class="food-card-total-value">823千卡</span>
+                  </p>
+                  <div class="feed-card-divider" data-food-card-divider aria-hidden="true"></div>
+                  <button
+                    class="feed-chart-header"
+                    type="button"
+                    data-card-collapse-toggle
+                    aria-expanded="true"
+                    aria-label="切换近7天饮食热量内容"
+                  >
+                    <img
+                      src="./assets/AI深度思考.png"
+                      alt=""
+                      class="feed-chart-sparkles"
+                      aria-hidden="true"
+                    />
+                    <span class="feed-chart-title">近7天饮食热量</span>
+                    <span class="feed-chart-chevron" aria-hidden="true">
+                      <img src="./assets/上下箭头.png" alt="" class="feed-chart-chevron-image" />
+                    </span>
+                  </button>
+                  <div class="feed-chart-content food-chart-content" data-card-collapse-content>
+                    <section class="food-chart-panel" aria-label="近7天饮食热量">
+                      <div class="food-chart-axis">
+                        <span>2000</span>
+                        <span>1500</span>
+                        <span>1000</span>
+                        <span>500</span>
+                      </div>
+                      <div class="food-chart-plot">
+                        <div class="food-chart-grid" aria-hidden="true">
+                          <span></span>
+                          <span></span>
+                          <span></span>
+                          <span></span>
+                        </div>
+                        <div class="food-chart-bars">
+                          <span class="food-chart-bar" style="--bar-height: 0px"></span>
+                          <span class="food-chart-bar" style="--bar-height: 29px"></span>
+                          <span class="food-chart-bar" style="--bar-height: 72px"></span>
+                          <span class="food-chart-bar" style="--bar-height: 78px"></span>
+                          <span class="food-chart-bar" style="--bar-height: 58px"></span>
+                          <span class="food-chart-bar" style="--bar-height: 72px"></span>
+                          <span class="food-chart-bar food-chart-bar-today" style="--bar-height: 29px">
+                            <em>823</em>
+                          </span>
+                        </div>
+                        <div class="food-chart-days">
+                          <span>周六</span>
+                          <span>周日</span>
+                          <span>周一</span>
+                          <span>周二</span>
+                          <span>周三</span>
+                          <span>周四</span>
+                          <span>今天</span>
+                        </div>
+                      </div>
+                    </section>
+                    <p class="food-card-summary" data-food-card-summary>
+                      日均摄入1380千卡，今天吃了5种食物，饮食多样性不错。
+                    </p>
+                  </div>
+                </section>
+              </article>
+            </section>
+          </section>
+
+          <div class="input-dock input-dock-card">
+            <img
+              src="./assets/文字输入框.png"
+              alt="文字输入框"
+              class="input-image"
+            />
+            <span class="card-input-text" data-card-input-text>点击发送，展示记饮食动效</span>
+            <button
+              class="card-input-action"
+              type="button"
+              aria-label="显示饮食卡片"
+              data-card-input-toggle
+            ></button>
+          </div>
+
+          <nav class="tabbar" aria-label="Bottom navigation">
+            <img src="./assets/TabBar切图.png" alt="底部导航" class="tabbar-image" />
+          </nav>
+
+          <div class="home-indicator" aria-hidden="true"></div>
+        </section>
+      </section>
+    </main>
+
+    <script>
+      const todayDate = document.querySelector("[data-today-date]");
+      const todayWeekday = document.querySelector("[data-today-weekday]");
+      const cardPageBody = document.querySelector(".card-page-body");
+      const cardInputText = document.querySelector("[data-card-input-text]");
+      const cardInputToggle = document.querySelector("[data-card-input-toggle]");
+      const feedEntryFood = document.querySelector("[data-feed-entry-food]");
+      const foodCardPhoto = document.querySelector("[data-food-card-photo]");
+      const foodCardContent = document.querySelector("[data-food-card-content]");
+      const foodCardTotal = document.querySelector("[data-food-card-total]");
+      const foodCardSummary = document.querySelector("[data-food-card-summary]");
+      const foodCardDivider = document.querySelector("[data-food-card-divider]");
+      const typingTimers = new WeakMap();
+      const startTimers = new WeakMap();
+      let foodRevealScrollRaf = null;
+      let hasRevealedFoodCard = false;
+
+      const weekdayMap = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
+      const FOOD_CHART_BASE_REVEAL_MS = 600;
+      const FOOD_CHART_BARS_REVEAL_MS = 1040;
+      const FOOD_CARD_SHELL_EXPAND_MS = 250;
+
+      if (todayDate && todayWeekday) {
+        const now = new Date();
+        todayDate.textContent = `${now.getMonth() + 1}月${now.getDate()}日`;
+        todayWeekday.textContent = weekdayMap[now.getDay()];
+      }
+
+      const scrollCardPageToBottom = (behavior = "auto") => {
+        if (!cardPageBody) {
+          return;
+        }
+
+        cardPageBody.scrollTo({
+          top: cardPageBody.scrollHeight,
+          behavior,
+        });
+      };
+
+      const keepCardPageBottomVisible = (duration = 2400) => {
+        if (!cardPageBody) {
+          return;
+        }
+
+        if (foodRevealScrollRaf) {
+          window.cancelAnimationFrame(foodRevealScrollRaf);
+          foodRevealScrollRaf = null;
+        }
+
+        const startTime = performance.now();
+
+        const tick = (now) => {
+          scrollCardPageToBottom();
+
+          if (now - startTime < duration) {
+            foodRevealScrollRaf = window.requestAnimationFrame(tick);
+            return;
+          }
+
+          foodRevealScrollRaf = null;
+        };
+
+        foodRevealScrollRaf = window.requestAnimationFrame(tick);
+      };
+
+      const flattenSummaryNodes = (node, activeClassName = "") => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          return Array.from(node.textContent || "").map((character) => ({
+            character,
+            className: activeClassName,
+          }));
+        }
+
+        if (node.nodeType !== Node.ELEMENT_NODE) {
+          return [];
+        }
+
+        const currentClassName = node.classList?.length ? Array.from(node.classList).join(" ") : "";
+        const nextClassName = currentClassName || activeClassName;
+
+        return Array.from(node.childNodes).flatMap((childNode) =>
+          flattenSummaryNodes(childNode, nextClassName),
+        );
+      };
+
+      const appendSummaryToken = (element, token) => {
+        const lastWrapper = element.lastElementChild;
+        const wrapperClassName = token.className || "";
+        let targetWrapper = lastWrapper;
+
+        if (!targetWrapper || (targetWrapper.dataset.wrapperClassName || "") !== wrapperClassName) {
+          targetWrapper = document.createElement("span");
+          targetWrapper.dataset.wrapperClassName = wrapperClassName;
+
+          if (wrapperClassName) {
+            targetWrapper.className = wrapperClassName;
+          }
+
+          element.appendChild(targetWrapper);
+        }
+
+        const characterNode = document.createElement("span");
+        characterNode.className = "summary-char";
+        characterNode.textContent = token.character;
+        targetWrapper.appendChild(characterNode);
+      };
+
+      const clearTypedElementTimers = (element) => {
+        if (!element) {
+          return;
+        }
+
+        const typingTimer = typingTimers.get(element);
+        const startTimer = startTimers.get(element);
+
+        if (typingTimer) {
+          window.clearTimeout(typingTimer);
+          typingTimers.delete(element);
+        }
+
+        if (startTimer) {
+          window.clearTimeout(startTimer);
+          startTimers.delete(element);
+        }
+      };
+
+      const prepareTypedElement = (element) => {
+        if (!element) {
+          return;
+        }
+
+        if (!element.dataset.fullHtml) {
+          element.dataset.fullHtml = element.innerHTML;
+        }
+
+        if (!element.dataset.fullText) {
+          const tokens = Array.from(element.childNodes).flatMap((childNode) =>
+            flattenSummaryNodes(childNode),
+          );
+          element.dataset.fullText = JSON.stringify(tokens);
+        }
+      };
+
+      const setTypedElementHeight = (element, height) => {
+        if (!element) {
+          return;
+        }
+
+        element.style.height = typeof height === "number" ? `${height}px` : height;
+      };
+
+      const syncTypedElementHeight = (element) => {
+        if (!element) {
+          return;
+        }
+
+        setTypedElementHeight(element, element.scrollHeight);
+      };
+
+      const getElementFirstLineHeight = (element, fallbackMultiplier = 1.6) => {
+        if (!element) {
+          return 0;
+        }
+
+        const computedStyle = window.getComputedStyle(element);
+        const parsedLineHeight = Number.parseFloat(computedStyle.lineHeight);
+
+        if (Number.isFinite(parsedLineHeight)) {
+          return parsedLineHeight;
+        }
+
+        const parsedFontSize = Number.parseFloat(computedStyle.fontSize);
+        return Number.isFinite(parsedFontSize) ? parsedFontSize * fallbackMultiplier : 28;
+      };
+
+      const startTypewriterForElement = (element, options = {}) => {
+        if (!element) {
+          return;
+        }
+
+        const { onCharacter, onDone } = options;
+
+        prepareTypedElement(element);
+        clearTypedElementTimers(element);
+
+        const tokens = JSON.parse(element.dataset.fullText || "[]");
+        let index = 0;
+
+        element.innerHTML = "";
+        syncTypedElementHeight(element);
+
+        const typeNextCharacter = () => {
+          appendSummaryToken(element, tokens[index]);
+          syncTypedElementHeight(element);
+          onCharacter?.();
+          index += 1;
+
+          if (index >= tokens.length) {
+            setTypedElementHeight(element, "auto");
+            typingTimers.delete(element);
+            onDone?.();
+            return;
+          }
+
+          const currentCharacter = tokens[index - 1]?.character || "";
+          const delay = /[，。,；：！？]/.test(currentCharacter)
+            ? 90
+            : /\s/.test(currentCharacter)
+              ? 18
+              : 28;
+
+          const nextTimer = window.setTimeout(typeNextCharacter, delay);
+          typingTimers.set(element, nextTimer);
+        };
+
+        typeNextCharacter();
+      };
+
+      const runFoodFeedEntryReveal = () => {
+        if (
+          !feedEntryFood ||
+          !foodCardPhoto ||
+          !foodCardContent ||
+          !foodCardTotal ||
+          !foodCardSummary ||
+          !foodCardDivider
+        ) {
+          return;
+        }
+
+        [foodCardContent, foodCardTotal, foodCardSummary].forEach((element) => {
+          prepareTypedElement(element);
+          clearTypedElementTimers(element);
+          element.innerHTML = "";
+          setTypedElementHeight(element, 0);
+        });
+
+        feedEntryFood.classList.remove(
+          "is-food-shell-visible",
+          "is-food-photo-visible",
+          "is-food-content-visible",
+          "is-food-total-visible",
+          "is-food-divider-visible",
+          "is-food-summary-visible",
+          "is-food-chart-visible",
+          "is-food-bars-visible",
+          "is-food-summary-text-visible",
+        );
+        feedEntryFood.classList.add("is-entering");
+        keepCardPageBottomVisible();
+
+        const primaryStartTimer = window.setTimeout(() => {
+          feedEntryFood.classList.add("is-food-shell-visible");
+          scrollCardPageToBottom();
+        }, 0);
+
+        const photoStartTimer = window.setTimeout(() => {
+          feedEntryFood.classList.add("is-food-photo-visible");
+          scrollCardPageToBottom();
+        }, FOOD_CARD_SHELL_EXPAND_MS);
+
+        const textStartTimer = window.setTimeout(() => {
+          feedEntryFood.classList.add("is-food-content-visible");
+          setTypedElementHeight(foodCardContent, getElementFirstLineHeight(foodCardContent, 1.45));
+          scrollCardPageToBottom();
+
+          startTypewriterForElement(foodCardContent, {
+            onCharacter: () => {
+              scrollCardPageToBottom();
+            },
+            onDone: () => {
+              feedEntryFood.classList.add("is-food-total-visible");
+              setTypedElementHeight(foodCardTotal, getElementFirstLineHeight(foodCardTotal, 1.2));
+              scrollCardPageToBottom();
+
+              startTypewriterForElement(foodCardTotal, {
+                onCharacter: () => {
+                  scrollCardPageToBottom();
+                },
+                onDone: () => {
+                  const summaryRevealTimer = window.setTimeout(() => {
+                    feedEntryFood.classList.add("is-food-divider-visible");
+                    scrollCardPageToBottom();
+
+                    window.setTimeout(() => {
+                      feedEntryFood.classList.add("is-food-summary-visible");
+                      scrollCardPageToBottom();
+
+                      window.setTimeout(() => {
+                        feedEntryFood.classList.add("is-food-chart-visible");
+                        scrollCardPageToBottom();
+                      }, 0);
+
+                      window.setTimeout(() => {
+                        feedEntryFood.classList.add("is-food-bars-visible");
+                        scrollCardPageToBottom();
+                      }, FOOD_CHART_BASE_REVEAL_MS);
+
+                      window.setTimeout(() => {
+                        feedEntryFood.classList.add("is-food-summary-text-visible");
+                        setTypedElementHeight(
+                          foodCardSummary,
+                          getElementFirstLineHeight(foodCardSummary, 1.5),
+                        );
+                        scrollCardPageToBottom();
+
+                        startTypewriterForElement(foodCardSummary, {
+                          onCharacter: () => {
+                            scrollCardPageToBottom();
+                          },
+                        });
+                        startTimers.delete(foodCardSummary);
+                      }, FOOD_CHART_BARS_REVEAL_MS);
+                    }, 240);
+                  }, 120);
+
+                  startTimers.set(foodCardSummary, summaryRevealTimer);
+                },
+              });
+            },
+          });
+
+          startTimers.delete(foodCardContent);
+          startTimers.delete(foodCardTotal);
+        }, FOOD_CARD_SHELL_EXPAND_MS + 300);
+
+        startTimers.set(foodCardContent, primaryStartTimer);
+        startTimers.set(foodCardPhoto, photoStartTimer);
+        startTimers.set(foodCardTotal, textStartTimer);
+      };
+
+      cardInputToggle?.addEventListener("click", () => {
+        if (hasRevealedFoodCard || !feedEntryFood) {
+          return;
+        }
+
+        hasRevealedFoodCard = true;
+        feedEntryFood.hidden = false;
+
+        if (cardInputText) {
+          cardInputText.textContent = "记录生活点滴";
+          cardInputText.classList.add("is-muted");
+        }
+
+        runFoodFeedEntryReveal();
+        window.requestAnimationFrame(() => {
+          scrollCardPageToBottom();
+        });
+      });
+
+      document.querySelectorAll("[data-card-collapse-toggle]").forEach((toggle) => {
+        toggle.addEventListener("click", () => {
+          const card = toggle.closest(".feed-card");
+          const content = card?.querySelector("[data-card-collapse-content]");
+
+          if (!card || !content) {
+            return;
+          }
+
+          const willCollapse = !card.classList.contains("is-collapsed");
+
+          if (willCollapse) {
+            content.style.maxHeight = `${content.scrollHeight}px`;
+            window.requestAnimationFrame(() => {
+              content.style.maxHeight = "0px";
+            });
+            card.classList.add("is-collapsed");
+            toggle.setAttribute("aria-expanded", "false");
+            return;
+          }
+
+          card.classList.remove("is-collapsed");
+          toggle.setAttribute("aria-expanded", "true");
+
+          window.requestAnimationFrame(() => {
+            content.style.maxHeight = `${content.scrollHeight}px`;
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
