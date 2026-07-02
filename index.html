@@ -646,7 +646,7 @@
             <p class="food-camera-tip">向下俯拍食物确保在取景框内</p>
 
             <div class="food-camera-actions">
-              <button class="food-camera-album" type="button" aria-label="打开相册">
+              <button class="food-camera-album" type="button" aria-label="打开相册" data-food-camera-album>
                 <img src="./assets/相册.png" alt="" aria-hidden="true" />
               </button>
               <button class="food-camera-shutter" type="button" aria-label="拍摄" data-food-camera-shutter>
@@ -666,6 +666,54 @@
             </section>
 
             <div class="food-camera-home-indicator" aria-hidden="true"></div>
+          </section>
+
+          <section class="food-album-sheet" data-food-album-sheet hidden aria-label="相册选择页">
+            <header class="food-album-header">
+              <button class="food-album-cancel" type="button" data-food-album-cancel>取消</button>
+              <div class="food-album-title-wrap">
+                <h2 class="food-album-title">最近项目</h2>
+                <button class="food-album-subtitle" type="button" aria-label="相册分类">
+                  轻触修改相册
+                  <span aria-hidden="true">⌄</span>
+                </button>
+              </div>
+            </header>
+
+            <div class="food-album-grid" aria-label="相册缩略图">
+              <button class="food-album-item is-photo" type="button" data-food-album-select aria-label="选择照片 1"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 2"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 3"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 4"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 5"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 6"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 7"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 8"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 9"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 10"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 11"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 12"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 13"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 14"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 15"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 16"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 17"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 18"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 19"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 20"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 21"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 22"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 23"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 24"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 25"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 26"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 27"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 28"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 29"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 30"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 31"></button>
+              <button class="food-album-item" type="button" data-food-album-select aria-label="选择照片 32"></button>
+            </div>
           </section>
 
           <div class="input-dock input-dock-card">

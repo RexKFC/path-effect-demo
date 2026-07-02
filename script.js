@@ -46,14 +46,25 @@ const foodFlyoutWrap = foodCapturePanel?.querySelector("[data-food-flyout-wrap]"
 const foodCaptureTimelineFeed = foodCapturePanel?.querySelector(".food-capture-timeline-feed");
 const foodCaptureEntry = foodCapturePanel?.querySelector("[data-food-capture-entry]");
 const foodCameraSheet = foodCapturePanel?.querySelector("[data-food-camera-sheet]");
+const foodCameraBackground = foodCapturePanel?.querySelector(".food-camera-background");
+const foodCameraRecognitionImage = foodCapturePanel?.querySelector(".food-camera-recognition-image");
+const foodCameraAlbumButton = foodCapturePanel?.querySelector("[data-food-camera-album]");
 const foodCameraCloseButton = foodCapturePanel?.querySelector("[data-food-camera-close]");
 const foodCameraShutterButton = foodCapturePanel?.querySelector("[data-food-camera-shutter]");
 const foodCameraRecognitionText = foodCapturePanel?.querySelector(".food-camera-recognition-text");
+const foodCameraRecognitionScan = foodCapturePanel?.querySelector(".food-camera-recognition-scan");
+const foodAlbumSheet = foodCapturePanel?.querySelector("[data-food-album-sheet]");
+const foodAlbumCancelButton = foodCapturePanel?.querySelector("[data-food-album-cancel]");
+const foodAlbumSelectButtons = Array.from(
+  foodCapturePanel?.querySelectorAll("[data-food-album-select]") || [],
+);
 let foodCameraRevealTimer = null;
 let foodCameraCaptureTimer = null;
 let foodCameraRecognitionTextTimer = null;
+let foodCameraScanStartTimer = null;
 let foodCameraScanTimer = null;
 let foodCameraCompletionTimer = null;
+let foodAlbumSheetTimer = null;
 let moodCardEnterTimer = null;
 let moodCardLeaveTimer = null;
 let moodFeedEntryCount = 0;
@@ -101,6 +112,8 @@ const CARD_OUTPUT_PRIMARY_REVEAL_MS = 250;
 const CARD_INPUT_TEXT_STEP_1 = "点击发送，展示记心情动效";
 const CARD_INPUT_TEXT_STEP_2 = "再次点击，展示记饮食动效";
 const CARD_INPUT_TEXT_STEP_3 = "记录生活点滴";
+const FOOD_CAMERA_IMAGE_DEFAULT = './assets/底图.png';
+const FOOD_CAMERA_IMAGE_ALBUM = './assets/底图2.png';
 
 const restoreElementOriginalContent = (element) => {
   if (!element) {
@@ -121,6 +134,24 @@ const resetTypedElementState = (element) => {
   restoreElementOriginalContent(element);
   element.style.removeProperty("height");
   element.style.removeProperty("--summary-target-height");
+};
+
+const setFoodCameraImage = (imagePath) => {
+  if (foodCameraBackground) {
+    foodCameraBackground.style.setProperty("--food-camera-image", `url("${imagePath}")`);
+  }
+
+  if (foodCameraRecognitionImage) {
+    foodCameraRecognitionImage.style.setProperty("--food-camera-image", `url("${imagePath}")`);
+  }
+};
+
+const resetFoodCameraScanPresentation = () => {
+  if (!foodCameraRecognitionScan) {
+    return;
+  }
+
+  foodCameraRecognitionScan.style.removeProperty("transform");
 };
 
 const resetFlyoutWrap = (wrap) => {
@@ -302,6 +333,11 @@ const resetFoodCaptureView = () => {
     foodCaptureRevealScrollRaf = null;
   }
 
+  if (foodAlbumSheetTimer) {
+    window.clearTimeout(foodAlbumSheetTimer);
+    foodAlbumSheetTimer = null;
+  }
+
   if (foodCaptureTimelineFeed && foodCaptureEntry) {
     Array.from(foodCaptureTimelineFeed.children).forEach((entry) => {
       if (entry !== foodCaptureEntry) {
@@ -332,6 +368,13 @@ const resetFoodCaptureView = () => {
   foodCapturePageBody?.scrollTo({ top: 0, behavior: "auto" });
   resetCollapsibleCards(foodCapturePanel);
   resetFlyoutWrap(foodFlyoutWrap);
+  setFoodCameraImage(FOOD_CAMERA_IMAGE_DEFAULT);
+  resetFoodCameraScanPresentation();
+  foodCameraSheet?.classList.remove("is-album-direct");
+  if (foodAlbumSheet) {
+    foodAlbumSheet.classList.remove("is-visible");
+    foodAlbumSheet.hidden = true;
+  }
   closeFoodCameraSheet({ immediate: true });
 };
 
@@ -1004,10 +1047,12 @@ const runFoodFeedEntryRevealFor = (entryElement, options = {}) => {
   entryElement.hidden = false;
   keepBottomVisible();
 
-  window.setTimeout(() => {
-    entryElement.classList.add("is-food-shell-visible");
-    scrollToBottom();
-  }, 0);
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      entryElement.classList.add("is-food-shell-visible");
+      scrollToBottom();
+    });
+  });
 
   window.setTimeout(() => {
     entryElement.classList.add("is-food-photo-visible");
@@ -1245,6 +1290,157 @@ const closeMoodCard = (onDone) => {
   }, 300);
 };
 
+const openFoodAlbumSheet = () => {
+  if (!foodAlbumSheet) {
+    return;
+  }
+
+  if (foodAlbumSheetTimer) {
+    window.clearTimeout(foodAlbumSheetTimer);
+    foodAlbumSheetTimer = null;
+  }
+
+  foodAlbumSheet.hidden = false;
+
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      foodAlbumSheet.classList.add("is-visible");
+    });
+  });
+};
+
+const closeFoodAlbumSheet = (options = {}) => {
+  const { immediate = false, onDone } = options;
+
+  if (!foodAlbumSheet) {
+    onDone?.();
+    return;
+  }
+
+  if (foodAlbumSheetTimer) {
+    window.clearTimeout(foodAlbumSheetTimer);
+    foodAlbumSheetTimer = null;
+  }
+
+  if (immediate) {
+    foodAlbumSheet.classList.remove("is-visible");
+    foodAlbumSheet.hidden = true;
+    onDone?.();
+    return;
+  }
+
+  foodAlbumSheet.classList.remove("is-visible");
+  foodAlbumSheetTimer = window.setTimeout(() => {
+    foodAlbumSheet.hidden = true;
+    foodAlbumSheetTimer = null;
+    onDone?.();
+  }, 320);
+};
+
+const finalizeFoodRecognition = () => {
+  closeFoodCameraSheet({
+    onDone: () => {
+      if (!foodCaptureTimelineFeed) {
+        return;
+      }
+
+      const foodTimelineEntry = createFoodTimelineEntry();
+
+      if (!foodTimelineEntry) {
+        return;
+      }
+
+      foodCaptureTimelineFeed.appendChild(foodTimelineEntry);
+      scrollFoodCapturePageToBottom();
+      runFoodFeedEntryRevealFor(foodTimelineEntry, {
+        scrollToBottom: () => scrollFoodCapturePageToBottom(),
+        keepBottomVisible: () => keepFoodCapturePageBottomVisible(4200),
+      });
+    },
+  });
+  foodCameraCompletionTimer = null;
+};
+
+const startFoodRecognitionFlow = (options = {}) => {
+  const { directFromAlbum = false } = options;
+  const scanStartDelay = directFromAlbum ? 300 : 0;
+
+  if (!foodCameraSheet || foodCameraSheet.hidden || foodCameraSheet.classList.contains("is-capturing")) {
+    return;
+  }
+
+  if (foodCameraCaptureTimer) {
+    window.clearTimeout(foodCameraCaptureTimer);
+    foodCameraCaptureTimer = null;
+  }
+
+  if (foodCameraRecognitionTextTimer) {
+    window.clearTimeout(foodCameraRecognitionTextTimer);
+    foodCameraRecognitionTextTimer = null;
+  }
+
+  if (foodCameraScanStartTimer) {
+    window.clearTimeout(foodCameraScanStartTimer);
+    foodCameraScanStartTimer = null;
+  }
+
+  if (foodCameraScanTimer) {
+    window.clearTimeout(foodCameraScanTimer);
+    foodCameraScanTimer = null;
+  }
+
+  if (foodCameraCompletionTimer) {
+    window.clearTimeout(foodCameraCompletionTimer);
+    foodCameraCompletionTimer = null;
+  }
+
+  foodCameraSheet.classList.remove("is-album-direct");
+
+  if (directFromAlbum) {
+    foodCameraSheet.classList.add("is-album-direct");
+    foodCameraSheet.classList.add("is-photo-visible", "is-capturing", "is-recognizing");
+  } else {
+    foodCameraSheet.classList.add("is-photo-visible", "is-capturing");
+  }
+
+  if (foodCameraRecognitionText) {
+    foodCameraRecognitionText.textContent = "正在识别食物...";
+  }
+
+  resetFoodCameraScanPresentation();
+  foodCameraSheet.classList.remove("is-scan-paused");
+
+  foodCameraScanStartTimer = window.setTimeout(() => {
+    foodCameraSheet?.classList.add("is-scan-active");
+    foodCameraScanStartTimer = null;
+  }, scanStartDelay);
+
+  foodCameraRecognitionTextTimer = window.setTimeout(() => {
+    if (foodCameraRecognitionText) {
+      foodCameraRecognitionText.textContent = "正在分析食物...";
+    }
+    foodCameraRecognitionTextTimer = null;
+  }, 2000 + scanStartDelay);
+
+  if (directFromAlbum) {
+    foodCameraCaptureTimer = null;
+  } else {
+    foodCameraCaptureTimer = window.setTimeout(() => {
+      foodCameraSheet?.classList.add("is-recognizing");
+      foodCameraCaptureTimer = null;
+    }, 420);
+  }
+
+  foodCameraScanTimer = window.setTimeout(() => {
+    foodCameraSheet?.classList.add("is-scan-paused");
+    foodCameraScanTimer = null;
+  }, 4250 + scanStartDelay);
+
+  foodCameraCompletionTimer = window.setTimeout(() => {
+    finalizeFoodRecognition();
+  }, 4300 + scanStartDelay);
+};
+
 const openFoodCameraSheet = () => {
   if (!foodCameraSheet) {
     return;
@@ -1265,6 +1461,11 @@ const openFoodCameraSheet = () => {
     foodCameraRecognitionTextTimer = null;
   }
 
+  if (foodCameraScanStartTimer) {
+    window.clearTimeout(foodCameraScanStartTimer);
+    foodCameraScanStartTimer = null;
+  }
+
   if (foodCameraScanTimer) {
     window.clearTimeout(foodCameraScanTimer);
     foodCameraScanTimer = null;
@@ -1275,11 +1476,24 @@ const openFoodCameraSheet = () => {
     foodCameraCompletionTimer = null;
   }
 
+  if (foodAlbumSheetTimer) {
+    window.clearTimeout(foodAlbumSheetTimer);
+    foodAlbumSheetTimer = null;
+  }
+
   closeMenu(foodFlyoutWrap, "fade");
+  setFoodCameraImage(FOOD_CAMERA_IMAGE_DEFAULT);
+  resetFoodCameraScanPresentation();
+  foodCameraSheet.classList.remove("is-album-direct");
+  if (foodAlbumSheet) {
+    foodAlbumSheet.classList.remove("is-visible");
+    foodAlbumSheet.hidden = true;
+  }
   foodCameraSheet.classList.remove(
     "is-photo-visible",
     "is-capturing",
     "is-recognizing",
+    "is-scan-paused",
     "is-scan-active",
   );
   if (foodCameraRecognitionText) {
@@ -1321,6 +1535,11 @@ const closeFoodCameraSheet = (options = {}) => {
     foodCameraRecognitionTextTimer = null;
   }
 
+  if (foodCameraScanStartTimer) {
+    window.clearTimeout(foodCameraScanStartTimer);
+    foodCameraScanStartTimer = null;
+  }
+
   if (foodCameraScanTimer) {
     window.clearTimeout(foodCameraScanTimer);
     foodCameraScanTimer = null;
@@ -1331,18 +1550,30 @@ const closeFoodCameraSheet = (options = {}) => {
     foodCameraCompletionTimer = null;
   }
 
+  if (foodAlbumSheetTimer) {
+    window.clearTimeout(foodAlbumSheetTimer);
+    foodAlbumSheetTimer = null;
+  }
+
   if (immediate) {
     foodCameraSheet.classList.remove(
       "is-visible",
       "is-photo-visible",
+      "is-album-direct",
       "is-capturing",
       "is-recognizing",
+      "is-scan-paused",
       "is-scan-active",
     );
     if (foodCameraRecognitionText) {
       foodCameraRecognitionText.textContent = "正在识别食物...";
     }
     foodCameraSheet.hidden = true;
+    resetFoodCameraScanPresentation();
+    if (foodAlbumSheet) {
+      foodAlbumSheet.classList.remove("is-visible");
+      foodAlbumSheet.hidden = true;
+    }
     onDone?.();
     return;
   }
@@ -1350,13 +1581,16 @@ const closeFoodCameraSheet = (options = {}) => {
   foodCameraSheet.classList.remove(
     "is-visible",
     "is-photo-visible",
+    "is-album-direct",
     "is-capturing",
     "is-recognizing",
+    "is-scan-paused",
     "is-scan-active",
   );
   if (foodCameraRecognitionText) {
     foodCameraRecognitionText.textContent = "正在识别食物...";
   }
+  resetFoodCameraScanPresentation();
 
   window.setTimeout(() => {
     if (!foodCameraSheet.classList.contains("is-visible")) {
@@ -1452,7 +1686,7 @@ foodCameraCloseButton?.addEventListener("click", () => {
   closeFoodCameraSheet();
 });
 
-foodCameraShutterButton?.addEventListener("click", () => {
+foodCameraAlbumButton?.addEventListener("click", () => {
   if (
     !foodCameraSheet ||
     foodCameraSheet.hidden ||
@@ -1462,61 +1696,31 @@ foodCameraShutterButton?.addEventListener("click", () => {
     return;
   }
 
-  if (foodCameraCaptureTimer) {
-    window.clearTimeout(foodCameraCaptureTimer);
-    foodCameraCaptureTimer = null;
+  openFoodAlbumSheet();
+});
+
+foodAlbumCancelButton?.addEventListener("click", () => {
+  closeFoodAlbumSheet();
+});
+
+foodAlbumSelectButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    setFoodCameraImage(FOOD_CAMERA_IMAGE_ALBUM);
+    startFoodRecognitionFlow({ directFromAlbum: true });
+    closeFoodAlbumSheet();
+  });
+});
+
+foodCameraShutterButton?.addEventListener("click", () => {
+  if (
+    !foodCameraSheet ||
+    foodCameraSheet.hidden ||
+    !foodCameraSheet.classList.contains("is-photo-visible") ||
+    foodCameraSheet.classList.contains("is-capturing")
+  ) {
+    return;
   }
-
-  foodCameraSheet.classList.add("is-capturing");
-
-  if (foodCameraRecognitionText) {
-    foodCameraRecognitionText.textContent = "正在识别食物...";
-  }
-
-  foodCameraSheet.classList.add("is-scan-active");
-
-  foodCameraRecognitionTextTimer = window.setTimeout(() => {
-    if (foodCameraRecognitionText) {
-      foodCameraRecognitionText.textContent = "正在分析食物...";
-    }
-    foodCameraRecognitionTextTimer = null;
-  }, 2000);
-
-  foodCameraCaptureTimer = window.setTimeout(() => {
-    foodCameraSheet.classList.add("is-recognizing");
-    foodCameraCaptureTimer = null;
-  }, 420);
-
-  foodCameraScanTimer = window.setTimeout(() => {
-    if (foodCameraSheet) {
-      foodCameraSheet.classList.remove("is-scan-active");
-    }
-    foodCameraScanTimer = null;
-  }, 4000);
-
-  foodCameraCompletionTimer = window.setTimeout(() => {
-    closeFoodCameraSheet({
-      onDone: () => {
-        if (!foodCaptureTimelineFeed) {
-          return;
-        }
-
-        const foodTimelineEntry = createFoodTimelineEntry();
-
-        if (!foodTimelineEntry) {
-          return;
-        }
-
-        foodCaptureTimelineFeed.appendChild(foodTimelineEntry);
-        scrollFoodCapturePageToBottom();
-        runFoodFeedEntryRevealFor(foodTimelineEntry, {
-          scrollToBottom: () => scrollFoodCapturePageToBottom(),
-          keepBottomVisible: () => keepFoodCapturePageBottomVisible(4200),
-        });
-      },
-    });
-    foodCameraCompletionTimer = null;
-  }, 4000);
+  startFoodRecognitionFlow();
 });
 
 document.addEventListener("click", (event) => {
